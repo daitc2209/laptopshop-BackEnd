@@ -27,7 +27,7 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column(name = "name", length = 350, unique = true)
+    @Column(name = "name", length = 550, unique = true)
     private String name;
 
     @Column(name = "price")
@@ -43,7 +43,7 @@ public class Product {
     private String img;
 
     @Column(name = "description")
-    private int description;
+    private String description;
 
     @OneToOne(mappedBy = "product")
     @JsonIgnore
@@ -60,4 +60,5 @@ public class Product {
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<OrderDetail> order_details;
+
 }

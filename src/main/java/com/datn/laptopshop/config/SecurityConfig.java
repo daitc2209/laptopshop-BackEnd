@@ -1,5 +1,7 @@
 package com.datn.laptopshop.config;
 
+import com.datn.laptopshop.config.Oauth2.CustomOAuth2UserService;
+import com.datn.laptopshop.config.Oauth2.OAuthLoginSuccessHandler;
 import com.datn.laptopshop.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
@@ -31,14 +34,19 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthEntryPoint jwtAuthEntryPoint;
 
+    @Autowired
+    private CustomOAuth2UserService oauth2UserService;
+
+    @Autowired
+    private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors().disable();
+
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/login","/api/register","/api/register/**").permitAll()
+                .requestMatchers("/**","/api/login","/api/register","/api/register/**","/api/getAllProduct").permitAll()
 //                        .requestMatchers("/api/register").hasRole("ADMIN")
                         .requestMatchers("").hasAnyRole("ADMIN","USER")
                         .anyRequest().authenticated()
@@ -47,17 +55,21 @@ public class SecurityConfig {
         // Add exception handler
         http.exceptionHandling()
                 .authenticationEntryPoint(jwtAuthEntryPoint);
-        http.oauth2Login();
+        http.oauth2Login()
+                .userInfoEndpoint()
+                .userService(oauth2UserService)
+                .and()
+                .successHandler(oAuthLoginSuccessHandler);
 
         // chính sách cors
-//        http.cors().configurationSource(request -> {
-//            CorsConfiguration corsConfig = new CorsConfiguration();
-//            corsConfig.setAllowedOrigins(Arrays.asList("https://localhost:3000"));
-//            corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//            corsConfig.setAllowedHeaders(Arrays.asList("*"));
-//            corsConfig.setAllowCredentials(true);
-//            return corsConfig;
-//        });
+        http.cors().configurationSource(request -> {
+            CorsConfiguration corsConfig = new CorsConfiguration();
+            corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+            corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            corsConfig.setAllowedHeaders(Arrays.asList("*"));
+            corsConfig.setAllowCredentials(true);
+            return corsConfig;
+        });
 
         return http.build();
     }

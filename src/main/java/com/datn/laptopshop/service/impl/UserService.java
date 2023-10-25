@@ -20,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -60,10 +61,14 @@ public class UserService implements IUserService, UserDetailsService {
                 var refreshToken = jwtService.generateRefreshToken(user.get());
                 m.put("accessToken", jwtToken);
                 m.put("refreshToken", refreshToken);
+                m.put("role", user.get().getRole().getName());
                 revokeAllUserTokens(user.get());
                 saveUserToken(user.get(), jwtToken);
                 return ResponseEntity.ok(m);
+//                return ResponseHandler.responseBuilder("data","login success",
+//                        HttpStatus.OK,m,1);
             }
+
         }
         return null;
     }
@@ -186,6 +191,11 @@ public class UserService implements IUserService, UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException(email + " not found"));
         var authorities = new ArrayList<GrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),authorities);
+        if (user.getPassword() != null && user.getPassword() != "")
+            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),authorities);
+        else {
+            return new org.springframework.security.core.userdetails.User(user.getEmail(), "0906088493",authorities);
+        }
     }
+
 }

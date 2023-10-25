@@ -40,10 +40,15 @@ public class JWTService {
     public String extractUserRole(String token) {
         Claims claims = extractAllClaims(token);
         List<String> roles = (List<String>) claims.get("role");
-        if (roles != null && !roles.isEmpty()) {
+        if(roles.get(0).equals("ROLE_USER") && !roles.isEmpty()){
             return roles.get(0);
         }
-        return null;
+        else if (roles.get(0).equals("SCOPE_openid") && !roles.isEmpty()) {
+            return roles.get(2);
+        }
+        else {
+            return null;
+        }
     }
 
     public String extractUsername(String token){

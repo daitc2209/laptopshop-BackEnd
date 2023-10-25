@@ -4,10 +4,8 @@ import com.datn.laptopshop.config.JavaMail;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.request.SignInRequest;
 import com.datn.laptopshop.dto.request.SignUpRequest;
-import com.datn.laptopshop.entity.User;
 import com.datn.laptopshop.service.IUserService;
 import com.datn.laptopshop.utils.URL;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 import java.util.Date;
@@ -26,7 +23,10 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("")
+@CrossOrigin(origins = "*", allowedHeaders = "*",
+        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.OPTIONS,RequestMethod.PUT,RequestMethod.HEAD}
+        ,allowCredentials = "false")
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -36,13 +36,13 @@ public class UserController {
     @Autowired
     private JavaMail javaMail;
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public ResponseEntity<Object> login(@RequestBody SignInRequest u) throws Exception {
         System.out.println("login: "+u.toString());
         return userService.login(u);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/api/register")
     public ResponseEntity<Object> register(@RequestBody SignUpRequest u, HttpServletRequest request) {
 
         try {
@@ -73,7 +73,7 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("/register/verify")
+    @GetMapping("/api/register/verify")
     public ResponseEntity<Object> verify(@RequestParam("token") String token) {
         try {
             boolean valid = userService.checkRegisterToken(token);
@@ -93,9 +93,10 @@ public class UserController {
         }
     }
 
-    @PostMapping("/refresh-token")
+    @PostMapping("/api/refresh-token")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("refreshToken!!!!!");
         userService.refreshToken(request, response);
     }
+
 }
