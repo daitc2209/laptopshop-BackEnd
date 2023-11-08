@@ -32,9 +32,6 @@ public class CheckOut {
     @Column(name = "bank_code")
     private String bankCode;
 
-    @Column(name = "bank_tran_no")
-    private String bankTranNo;
-
     @Column(name = "card_type")
     private String cardType;
 
@@ -44,21 +41,4 @@ public class CheckOut {
     @Column(name = "pay_date")
     private String payDate;
 
-    @Column(name = "response_code")
-    private String responseCode;
-
-    @Column(name = "tmn_code")
-    private String tmnCode;
-
-    @Column(name = "transaction_no")
-    private String transactionNo;
-
-    @Column(name = "transaction_status")
-    private String transactionStatus;
-
-    @Column(name = "txn_ref")
-    private String txnRef;
-
-    @Column(name = "secure_hash")
-    private String secureHash;
 }

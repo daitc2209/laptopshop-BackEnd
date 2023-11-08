@@ -4,9 +4,14 @@ import com.datn.laptopshop.config.Oauth2.CustomOAuth2UserService;
 import com.datn.laptopshop.config.Oauth2.OAuthLoginSuccessHandler;
 import com.datn.laptopshop.service.impl.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,6 +25,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 @Configuration
@@ -46,7 +57,9 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/**","/api/login","/api/register","/api/register/**","/api/getAllProduct").permitAll()
+                .requestMatchers("/api/login","/api/register","/api/cart/**",
+                        "/api/store/**",
+                        "/api/register/**","/api/getAllProduct","/api/checkout/vnpay").permitAll()
 //                        .requestMatchers("/api/register").hasRole("ADMIN")
                         .requestMatchers("").hasAnyRole("ADMIN","USER")
                         .anyRequest().authenticated()
@@ -64,10 +77,11 @@ public class SecurityConfig {
         // chính sách cors
         http.cors().configurationSource(request -> {
             CorsConfiguration corsConfig = new CorsConfiguration();
-            corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+            corsConfig.setAllowedOrigins(Arrays.asList("http://localhost:5173/"));
             corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
             corsConfig.setAllowedHeaders(Arrays.asList("*"));
             corsConfig.setAllowCredentials(true);
+
             return corsConfig;
         });
 
@@ -83,5 +97,6 @@ public class SecurityConfig {
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
 
 }

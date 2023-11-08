@@ -12,4 +12,5 @@ public interface IProductService {
 
     Page<ProductDto> findAll(FilterProductRequest filterProduct, int page, int limit);
 
+    ProductDto findProductId(long id);
 }

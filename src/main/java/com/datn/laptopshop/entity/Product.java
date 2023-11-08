@@ -45,10 +45,6 @@ public class Product {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(mappedBy = "product")
-    @JsonIgnore
-    private Cart cart;
-
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Comment> comments;

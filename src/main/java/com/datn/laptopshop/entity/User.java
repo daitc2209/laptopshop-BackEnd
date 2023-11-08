@@ -95,10 +95,6 @@ public class User implements UserDetails{
     @JsonIgnore
     private List<CheckOut> checkOuts;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Cart> carts;
-
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Token> tokens;

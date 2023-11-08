@@ -34,6 +34,12 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 Double maxPrice,
                                 Pageable pageable
                                 );
+//    Page<Product> filterProduct(String brand,
+//                                String category,
+//                                Double minPrice,
+//                                Double maxPrice,
+//                                Pageable pageable
+//    );
 
 //    @Query("SELECT p\n" +
 //            "FROM Product p, Brand b, Category c \n" +

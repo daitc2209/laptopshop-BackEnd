@@ -3,6 +3,7 @@ package com.datn.laptopshop.service.impl;
 import com.datn.laptopshop.config.JWTService;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
+import com.datn.laptopshop.dto.request.EditProfileRequest;
 import com.datn.laptopshop.dto.request.SignInRequest;
 import com.datn.laptopshop.dto.request.SignUpRequest;
 import com.datn.laptopshop.entity.Role;
@@ -64,13 +65,13 @@ public class UserService implements IUserService, UserDetailsService {
                 m.put("role", user.get().getRole().getName());
                 revokeAllUserTokens(user.get());
                 saveUserToken(user.get(), jwtToken);
-                return ResponseEntity.ok(m);
-//                return ResponseHandler.responseBuilder("data","login success",
-//                        HttpStatus.OK,m,1);
+                return ResponseHandler.responseBuilder("success",
+                        "Login success",
+                        HttpStatus.OK,m,0);
             }
-
         }
-        return null;
+        return ResponseHandler.responseBuilder("error","login failed !!!",
+                HttpStatus.BAD_REQUEST,"",99);
     }
 
     @Override
@@ -183,6 +184,74 @@ public class UserService implements IUserService, UserDetailsService {
                 new ObjectMapper().writeValue(response.getOutputStream(), m);
             }
         }
+    }
+
+    @Override
+    public UserDto findUserByEmail(String name) {
+         var u = userRepository.findUserByEmail(name);
+         if (u.isPresent()){
+             return new UserDto().toUserDTO(u.get());
+         }
+         return null;
+    }
+
+    @Override
+    public User findUserByEmailGG(String name) {
+        var u = userRepository.findUserByEmail(name);
+        if (u.isPresent()){
+            return u.get();
+        }
+        return null;
+    }
+
+    @Override
+    public UserDto findbyId(long id) {
+        var u = userRepository.findById(id);
+        if (u.isPresent())
+            return new UserDto().toUserDTO(u.get());
+        return null;
+    }
+
+    @Override
+    public boolean update(EditProfileRequest profile) {
+        if (profile == null)
+            return false;
+
+        var u = userRepository.findById(profile.getId());
+        if (u.isPresent())
+        {
+            u.get().setId(profile.getId());
+            if (profile.getFullname() != null)
+            u.get().setFullname(profile.getFullname());
+            if (profile.getAddress() != null)
+                u.get().setAddress(profile.getAddress());
+            if (profile.getSex() != null)
+                u.get().setGender(profile.getSex());
+            if (profile.getBirthday() != null)
+                u.get().setDob(profile.getBirthday());
+            if (profile.getImg() != null)
+            u.get().setImg(profile.getImg());
+            u.get().setUpdate_at(new Date());
+            userRepository.save(u.get());
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean changePW(long id, String oldPW, String newPW) {
+        if (oldPW == null || newPW == null || oldPW=="" || newPW=="" || oldPW == newPW)
+            return false;
+        var u = userRepository.findById(id);
+        if (u.isPresent()){
+            if (passwordEncoder.matches(oldPW, u.get().getPassword())){
+                u.get().setHash_pw(passwordEncoder.encode(newPW));
+                userRepository.save(u.get());
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override

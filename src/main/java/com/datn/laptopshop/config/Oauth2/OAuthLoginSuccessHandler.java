@@ -1,6 +1,7 @@
 package com.datn.laptopshop.config.Oauth2;
 
 import com.datn.laptopshop.config.JWTService;
+import com.datn.laptopshop.service.IUserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,9 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Autowired
     private JWTService jwtService;
 
+    @Autowired
+    private IUserService userService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws ServletException, IOException {
@@ -26,6 +30,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         // Tạo token
         String token = jwtService.generateToken(u);
         String refreshToken = jwtService.generateToken(u);
+        userService.saveUserToken(userService.findUserByEmailGG(u.getUsername()),token);
         String role = "ROLE_USER";
         boolean hasRole = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         if(hasRole){

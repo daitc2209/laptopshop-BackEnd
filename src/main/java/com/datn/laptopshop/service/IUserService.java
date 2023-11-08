@@ -1,6 +1,7 @@
 package com.datn.laptopshop.service;
 
 import com.datn.laptopshop.dto.UserDto;
+import com.datn.laptopshop.dto.request.EditProfileRequest;
 import com.datn.laptopshop.dto.request.SignInRequest;
 import com.datn.laptopshop.dto.request.SignUpRequest;
 import com.datn.laptopshop.entity.User;
@@ -24,4 +25,13 @@ public interface IUserService {
 
     void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
+    UserDto findUserByEmail(String name);
+
+    User findUserByEmailGG(String name);
+
+    UserDto findbyId(long id);
+
+    boolean update(EditProfileRequest profile);
+
+    boolean changePW(long id,String oldPW, String newPW);
 }
