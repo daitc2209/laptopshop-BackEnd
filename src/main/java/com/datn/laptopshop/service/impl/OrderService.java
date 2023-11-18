@@ -1,11 +1,9 @@
 package com.datn.laptopshop.service.impl;
 
 import com.datn.laptopshop.config.ResponseHandler;
-import com.datn.laptopshop.dto.CartItem;
-import com.datn.laptopshop.dto.OrderDetailDto;
-import com.datn.laptopshop.dto.OrderDto;
-import com.datn.laptopshop.dto.ProductDto;
+import com.datn.laptopshop.dto.*;
 import com.datn.laptopshop.dto.request.InforOrder;
+import com.datn.laptopshop.entity.New;
 import com.datn.laptopshop.entity.Order;
 import com.datn.laptopshop.entity.OrderDetail;
 import com.datn.laptopshop.enums.StateCheckout;
@@ -18,6 +16,10 @@ import com.datn.laptopshop.service.IOrderService;
 import com.datn.laptopshop.service.IUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -155,5 +157,68 @@ public class OrderService implements IOrderService {
         orderRepository.save(order.get());
 
         return true;
+    }
+
+    @Override
+    public Page<OrderDto> findAll(int page, int limit,  String name, String payment, StateOrder stateOrder) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable p = PageRequest.of(page - 1,limit, sort);
+        Page<Order> pageNews = orderRepository.findAll(name,payment,stateOrder,p);
+
+        if (pageNews.isEmpty())
+            return null;
+
+        Page<OrderDto> pageNewsDto =pageNews.map(n -> {
+            OrderDto orderDto = new OrderDto().toOrderDto(n);
+            List<OrderDetail> listOrderDetailEntity = n.getOrderdetail();
+            List<OrderDetailDto> listOrderDetailDto = new ArrayList<>();
+            for (OrderDetail o: listOrderDetailEntity
+                 ) {
+                OrderDetailDto oDto = new OrderDetailDto().toOrderDetailDto(o);
+                oDto.setProduct(new ProductDto().toProductDTO(o.getProduct()));
+                listOrderDetailDto.add(oDto);
+            }
+            orderDto.setOrderdetail(listOrderDetailDto);
+            return orderDto;
+        });
+
+        System.out.println("page data: "+ pageNewsDto.toString());
+
+        return pageNewsDto;
+    }
+
+    @Override
+    public boolean updateStateOrder(long id, StateOrder status) {
+
+        Optional<Order> order = orderRepository.findById(id);
+        if (order.isEmpty()) {
+            return false;
+        }
+
+        // If saving modification fail, return false
+        if (status.equals("RECEIVED"))
+            order.get().setStateCheckout(StateCheckout.PAID);
+        order.get().setStateOrder(status);
+        if (orderRepository.save(order.get()) == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Page<OrderDto> revenue(int page, int limit, StateCheckout stateCheckout, StateOrder stateOrder, String payment, Date start, Date end) {
+        Pageable pageable = PageRequest.of(page-1, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
+         orderRepository.revenue(
+                stateCheckout,
+                stateOrder,
+                payment,
+                start,
+                end,
+                pageable);
+
+
+
+        return null;
     }
 }

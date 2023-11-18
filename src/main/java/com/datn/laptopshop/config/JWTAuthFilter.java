@@ -38,6 +38,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader(AUTHORIZATION);
         final String userEmail;
         System.out.println("doFilterInternal ****");
+        System.out.println("authHeader: "+authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")){
             try {
                 String token = authHeader.substring("Bearer ".length());

@@ -30,4 +30,21 @@ public class UserDto {
                 user.getGender(), user.getDob(), user.getAddress(), user.getStateUser(), user.getAuthType(),
                 user.getRole().getName(), user.getImg());
     }
+
+    @Override
+    public String toString() {
+        return "UserDto{" +
+                "id=" + id +
+                ", fullname='" + fullname + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", gender='" + gender + '\'' +
+                ", dob='" + dob + '\'' +
+                ", address='" + address + '\'' +
+                ", stateUser=" + stateUser +
+                ", authType=" + authType +
+                ", role='" + role + '\'' +
+                ", img='" + img + '\'' +
+                '}';
+    }
 }

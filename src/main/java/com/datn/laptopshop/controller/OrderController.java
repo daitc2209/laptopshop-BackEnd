@@ -5,10 +5,7 @@ import com.datn.laptopshop.dto.CartItem;
 import com.datn.laptopshop.dto.OrderDto;
 import com.datn.laptopshop.dto.request.InforOrder;
 import com.datn.laptopshop.dto.request.OrderRequest;
-import com.datn.laptopshop.service.ICartService;
-import com.datn.laptopshop.service.IOrderDetailService;
-import com.datn.laptopshop.service.IOrderService;
-import com.datn.laptopshop.service.IUserService;
+import com.datn.laptopshop.service.*;
 import com.datn.laptopshop.utils.IdLogged;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +31,9 @@ public class OrderController {
 
     @Autowired
     private IOrderService orderService;
+
+    @Autowired
+    private IProductService productService;
 
     @GetMapping("/order")
     public ResponseEntity<Object> getOrder(){

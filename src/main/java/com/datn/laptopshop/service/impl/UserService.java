@@ -3,9 +3,7 @@ package com.datn.laptopshop.service.impl;
 import com.datn.laptopshop.config.JWTService;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
-import com.datn.laptopshop.dto.request.EditProfileRequest;
-import com.datn.laptopshop.dto.request.SignInRequest;
-import com.datn.laptopshop.dto.request.SignUpRequest;
+import com.datn.laptopshop.dto.request.*;
 import com.datn.laptopshop.entity.Role;
 import com.datn.laptopshop.entity.Token;
 import com.datn.laptopshop.entity.User;
@@ -20,11 +18,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -77,6 +80,12 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public UserDto register(SignUpRequest u,String token, long tokenExpireAt) throws Exception{
         try{
+            if (u.getFullname() == null || u.getFullname() == ""
+                    || u.getEmail()==null || u.getEmail() == ""
+                    || u.getPassword() == null || u.getPassword() == ""
+                    || u.getAddress() == null || u.getAddress()=="")
+                return null;
+
             Optional<User> userActive = userRepository.findByEmailAndStateUserAndAuthType(u.getEmail(), StateUser.ACTIVED, AuthenticationType.DATABASE);
             if (!userActive.isEmpty()) {
                 throw new Exception("The email already exists!");
@@ -90,6 +99,7 @@ public class UserService implements IUserService, UserDetailsService {
             user.setFullname(u.getFullname());
             user.setHash_pw(passwordEncoder.encode(u.getPassword()));
             user.setEmail(u.getEmail());
+            user.setAddress(u.getAddress());
             user.setStateUser(StateUser.PENDING);
             user.setAuthType(AuthenticationType.DATABASE);
             user.setCreated_at(new Date());
@@ -227,11 +237,54 @@ public class UserService implements IUserService, UserDetailsService {
                 u.get().setAddress(profile.getAddress());
             if (profile.getSex() != null)
                 u.get().setGender(profile.getSex());
-            if (profile.getBirthday() != null)
+            if (!profile.getBirthday().equals("null"))
                 u.get().setDob(profile.getBirthday());
             if (profile.getImg() != null)
-            u.get().setImg(profile.getImg());
+                u.get().setImg(profile.getImg());
+            if (profile.getPhone() != null)
+                u.get().setPhone(profile.getPhone());
             u.get().setUpdate_at(new Date());
+            userRepository.save(u.get());
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean update(EditUserRequest edit) {
+        if (edit == null)
+            return false;
+        if (edit.isEmpty()) {
+            return false;
+        }
+
+        var u = userRepository.findById(edit.getId());
+        if (u.isPresent())
+        {
+            u.get().setId(edit.getId());
+            if (edit.getFullname() != null)
+                u.get().setFullname(edit.getFullname());
+            if (edit.getAddress() != null)
+                u.get().setAddress(edit.getAddress());
+            if (edit.getSex() != null)
+                u.get().setGender(edit.getSex());
+            if (!edit.getBirthday().equals("null"))
+                u.get().setDob(edit.getBirthday());
+            if (edit.getImg() != null)
+                u.get().setImg(edit.getImg());
+            if (edit.getPhone() != null)
+                u.get().setPhone(edit.getPhone());
+            if (edit.getStateUser() != null)
+                u.get().setStateUser(edit.getStateUser());
+            if (edit.getAuthType() != null)
+                u.get().setAuthType(edit.getAuthType());
+            var r = roleRepository.findById(edit.getRole());
+            if (r.isPresent()){
+                u.get().setRole(r.get());
+            }
+
+            u.get().setUpdate_at(new Date());
+
             userRepository.save(u.get());
         }
 
@@ -252,6 +305,93 @@ public class UserService implements IUserService, UserDetailsService {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean logout(String token) {
+        if (token == null)
+            return false;
+
+            var t = tokenRepository.findByToken(token);
+            if (t.isPresent())
+            {
+                t.get().setRevoked(true);
+                t.get().setExpired(true);
+//                tokenRepository.save(t.get());
+                tokenRepository.delete(t.get());
+                SecurityContextHolder.clearContext();
+                return true;
+            }
+            return false;
+
+    }
+
+    @Override
+    public Page<UserDto> findAll(int page, int limit, SearchUserRequest search) {
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
+        Pageable p = PageRequest.of(page - 1, limit, sort);
+
+        Page<User> pageUser = userRepository.findAll(search.getFullname(),search.getSex(),
+                search.getAddress(),search.getEmail(),search.getStateUser(),search.getAuthType(),search.getRole(),p);
+
+        if (pageUser.isEmpty())
+            return null;
+
+        Page<UserDto> pageUserDto = pageUser.map(u -> new UserDto().toUserDTO(u));
+
+        return pageUserDto;
+    }
+
+    @Override
+    public boolean insert(AddUserRequest addUserRequest) {
+        if (addUserRequest == null)
+            return false;
+
+        User u = new User();
+        u.setFullname(addUserRequest.getFullname());
+        u.setEmail(addUserRequest.getEmail());
+        u.setHash_pw(passwordEncoder.encode(addUserRequest.getPassword()));
+        u.setGender("MALE");
+        u.setAddress(" ");
+        u.setStateUser(StateUser.ACTIVED);
+        u.setAuthType(AuthenticationType.DATABASE);
+        u.setRole(roleRepository.findById(addUserRequest.getRole()).get());
+        u.setCreated_at(new Date());
+
+        userRepository.save(u);
+
+        return true;
+    }
+
+    @Override
+    public boolean lock(long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            return false;
+
+        // If saving modification fail, return false
+        user.get().setStateUser(StateUser.DISABLED);
+        if (userRepository.save(user.get()) == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean unlock(long id) {
+        // If the data to be modified is not found, throw exception
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty())
+            return false;
+
+        // If saving modification fail, return false
+        user.get().setStateUser(StateUser.ACTIVED);
+        if (userRepository.save(user.get()) == null) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -40,4 +40,18 @@ public class New {
 
     @Column(name = "updated_at")
     private Date update_at;
+
+    @Override
+    public String toString() {
+        return "New{" +
+                "id=" + id +
+                ", category=" + category.getId() +
+                ", title='" + title + '\'' +
+                ", img='" + img + '\'' +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", content='" + content + '\'' +
+                ", created_at=" + created_at +
+                ", update_at=" + update_at +
+                '}';
+    }
 }

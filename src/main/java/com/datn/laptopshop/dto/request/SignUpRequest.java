@@ -16,12 +16,15 @@ public class SignUpRequest {
 
     private String password;
 
+    private String address;
+
     @Override
     public String toString() {
         return "SignUpRequest{" +
                 "fullname='" + fullname + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

@@ -1,10 +1,16 @@
 package com.datn.laptopshop.service.impl;
 
 import com.datn.laptopshop.config.ResponseHandler;
+import com.datn.laptopshop.dto.OrderDetailDto;
 import com.datn.laptopshop.dto.ProductDto;
+import com.datn.laptopshop.dto.UserDto;
 import com.datn.laptopshop.dto.request.FilterProductRequest;
+import com.datn.laptopshop.dto.request.SearchProductRequest;
+import com.datn.laptopshop.entity.Brand;
 import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.Product;
+import com.datn.laptopshop.entity.User;
+import com.datn.laptopshop.repos.BrandRepository;
 import com.datn.laptopshop.repos.CategoryRepository;
 import com.datn.laptopshop.repos.ProductRepository;
 import com.datn.laptopshop.service.IProductService;
@@ -15,10 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -29,6 +32,9 @@ public class ProductService implements IProductService {
 
     @Autowired
     ProductRepository productRepository;
+
+    @Autowired
+    BrandRepository brandRepository;
 
     @Override
     public List<ProductDto> findByCategoryId(long id) {
@@ -111,6 +117,151 @@ public class ProductService implements IProductService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<ProductDto> findByNameSearch(String term) {
+        List<Product> list = productRepository.findByNameStartsWith(term);
+        if (list.isEmpty())
+            return null;
+        List<ProductDto> list1 = new ArrayList<>();
+        for (Product p : list)
+            list1.add(new ProductDto().toProductDTO(p));
+
+        return list1;
+    }
+
+    @Override
+    public Page<ProductDto> findAll(int page, int limit, SearchProductRequest search) {
+        Sort sort = Sort.by(Sort.Direction.DESC,"id");
+        Pageable p = PageRequest.of(page - 1, limit, sort);
+        System.out.println("vao duoc service");
+
+        Page<Product> pageUser = productRepository.findAll(search.getName(),search.getPrice(),
+                search.getDiscount(),search.getCategoryName(),search.getBrandName(),p);
+
+        if (pageUser.isEmpty())
+            return null;
+
+        Page<ProductDto> pageUserDto = pageUser.map(product -> new ProductDto().toProductDTO(product));
+
+        return pageUserDto;
+    }
+
+    @Override
+    public boolean insert(ProductDto productDto) {
+// If the input is null, throw exception
+        if (productDto == null) {
+            return false;
+        }
+
+        // If the input is empty, throw exception
+        if (productDto.isEmpty()) {
+            return false;
+        }
+
+        // If insert data failed, return null
+        Product productEntity = new Product();
+
+        productEntity.setId(productDto.getId());
+        Optional<Category> categoryEntity = categoryRepository.findByName(productDto.getCategoryName());
+        productEntity.setCategory(categoryEntity.get());
+        Optional<Brand> brandEntity = brandRepository.findByName(productDto.getBrandName());
+        productEntity.setBrand(brandEntity.get());
+        productEntity.setName(productDto.getName());
+        productEntity.setPrice(productDto.getPrice());
+        productEntity.setDiscount(productDto.getDiscount());
+        productEntity.setQuantity(productDto.getQuantity());
+        productEntity.setImg(productDto.getImg());
+        productEntity.setDescription(productDto.getDescription());
+
+        Product productSave = productRepository.save(productEntity);
+        if (!productRepository.existsById(productSave.getId())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean update(ProductDto productDto) {
+// If the input is null, throw exception
+        if (productDto == null) {
+            System.out.println("product null");
+            return false;
+        }
+
+        // If the input is empty, throw exception
+        if (productDto.isEmpty()) {
+            System.out.println("product Empty");
+            return false;
+        }
+
+        // If the data to be modified is not found, throw exception
+        Optional<Product> oldProductEntity = productRepository.findById(productDto.getId());
+        if (oldProductEntity.isEmpty()) {
+            System.out.println("product not found");
+            return false;
+        }
+
+        // If the new product name is different from the old product name and the new
+        // product name already exists, throw exception
+
+        // If saving modification fail, return false
+        Category categoryEntity = categoryRepository.findByName(productDto.getCategoryName()).get();
+        oldProductEntity.get().setCategory(categoryEntity);
+        Brand brandEntity = brandRepository.findByName(productDto.getBrandName()).get();
+        oldProductEntity.get().setBrand(brandEntity);
+        oldProductEntity.get().setName(productDto.getName());
+        oldProductEntity.get().setPrice(productDto.getPrice());
+        oldProductEntity.get().setDiscount(productDto.getDiscount());
+        oldProductEntity.get().setImg(productDto.getImg());
+        oldProductEntity.get().setQuantity(productDto.getQuantity());
+        oldProductEntity.get().setDescription(productDto.getDescription());
+
+        Product productSave = productRepository.save(oldProductEntity.get());
+        if (productSave == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean delete(long id) {
+        // If the data does not exist, throw exception
+        if (!productRepository.existsById(id)) {
+            System.out.println("product not exist!!");
+            return false;
+        }
+
+        // Clear data based on input
+        productRepository.deleteById(id);
+
+        // If the deleted data still exists, return false
+        if (productRepository.existsById(id)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean updateQuantityProduct(List<OrderDetailDto> list) {
+
+        for (OrderDetailDto order : list)
+        {
+            var p = productRepository.findById(order.getProduct().getId());
+            if (p.isEmpty())
+                return false;
+            var oldQuantity = p.get().getQuantity();
+            if (oldQuantity < order.getNum())
+                return false;
+            p.get().setQuantity(oldQuantity - order.getNum());
+            productRepository.save(p.get());
+        }
+
+        return true;
     }
 
 

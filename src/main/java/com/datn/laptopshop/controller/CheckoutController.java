@@ -8,6 +8,7 @@ import com.datn.laptopshop.enums.StateCheckout;
 import com.datn.laptopshop.service.ICheckoutService;
 import com.datn.laptopshop.service.IOrderDetailService;
 import com.datn.laptopshop.service.IOrderService;
+import com.datn.laptopshop.service.IProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,10 @@ public class CheckoutController {
 
     @Autowired
     private IOrderDetailService orderDetailService;
+
+    @Autowired
+    private IProductService productService;
+
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@GetMapping("/vnpay")
@@ -150,7 +155,10 @@ public class CheckoutController {
 		}else {
 			m.put("error", "Giao dịch thất bại");
 		}
-
+        boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(orderEntity.getId()));
+        if (!b)
+            return ResponseHandler.responseBuilder("Message","Check Out Failed!!!",
+                    HttpStatus.BAD_REQUEST,"",99);
         m.put("order", orderEntity);
         m.put("orderdetail", orderDetailService.findByOrder(orderEntity.getId()));
 
@@ -160,6 +168,10 @@ public class CheckoutController {
 
     @GetMapping("/getBill")
     public ResponseEntity<Object> getBill(@RequestParam("id") long id){
+        boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(id));
+        if (!b)
+            return ResponseHandler.responseBuilder("Message","Get bill in checkout Failed!!!",
+                    HttpStatus.BAD_REQUEST,"",99);
         Map m = new HashMap<>();
         m.put("order",orderService.findById(id));
         m.put("orderdetail",orderDetailService.findByOrder(id));

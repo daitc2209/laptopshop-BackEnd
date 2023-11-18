@@ -4,6 +4,7 @@ import com.datn.laptopshop.config.JavaMail;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
 import com.datn.laptopshop.dto.request.EditProfileRequest;
+import com.datn.laptopshop.dto.request.SearchUserRequest;
 import com.datn.laptopshop.dto.request.SignInRequest;
 import com.datn.laptopshop.dto.request.SignUpRequest;
 import com.datn.laptopshop.service.IUserService;
@@ -27,7 +28,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*", allowedHeaders = "*",
         methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.OPTIONS,RequestMethod.PUT,RequestMethod.HEAD}
         ,allowCredentials = "false")
@@ -50,14 +51,12 @@ public class UserController {
     public ResponseEntity<Object> register(@RequestBody SignUpRequest u, HttpServletRequest request) {
 
         try {
-            Map m = new HashMap<>();
             String token = UUID.randomUUID().toString();
             long tokenExpireAt = new Date().getTime() + TimeUnit.MINUTES.toMillis(5);
             var user = userService.register(u, token, tokenExpireAt);
             if(user != null) {
                 String subject = "Account Verification";
-
-                String verifyLink = URL.getSiteURL(request) + "/api/register/verify?token="+token;
+                String verifyLink = "http://localhost:5173/auth/sign-up?token="+token;
                 String content = "<p>Hello,</p>"
                         + "<p>Please click the link below to verify your registration:</p>"
                         + "<h3><a href='" + verifyLink + "'>VERIFY</a></h3>"
@@ -65,7 +64,6 @@ public class UserController {
 
                 javaMail.sendEmail(user.getEmail(), subject, content);
 
-                m.put("success","You have signed up successfully! Please check your email to verify your account");
                 return ResponseHandler.responseBuilder("success",
                         "You have signed up successfully! Please check your email to verify your account",
                         HttpStatus.OK,"",0);
@@ -83,14 +81,14 @@ public class UserController {
         try {
             boolean valid = userService.checkRegisterToken(token);
 
-            if(valid) {
+            if(valid == true) {
                 return ResponseHandler.responseBuilder("success",
                         "Congratulations, your account has been verified. Please sign in.",
                         HttpStatus.OK,"",0);
             }else {
                 return ResponseHandler.responseBuilder("error",
                         "Sorry, we could not verify account. It maybe already verified, or verification code is incorrect.",
-                        HttpStatus.BAD_REQUEST,"",1);
+                        HttpStatus.OK,"",0);
             }
         } catch (Exception e) {
             return ResponseHandler.responseBuilder("error",e.getMessage(),
@@ -102,6 +100,20 @@ public class UserController {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("refreshToken!!!!!");
         userService.refreshToken(request, response);
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<Object> logout(@RequestParam("token") String token){
+        try {
+            System.out.println("vao duoc logout !!");
+            var l = userService.logout(token);
+            if (l)
+                return ResponseHandler.responseBuilder("success", "Logout success", HttpStatus.OK,"",0);
+            return ResponseHandler.responseBuilder("error", "Logout failed", HttpStatus.BAD_REQUEST,"",99);
+
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
+        }
     }
 
     @GetMapping("/user/profile")
@@ -119,7 +131,6 @@ public class UserController {
                 profile.setBirthday(user.getDob());
                 profile.setFullname(user.getFullname());
                 m.put("profile",profile);
-                m.put("typeAuth",user.getAuthType());
             }
             return ResponseHandler.responseBuilder("success", "get profile user success", HttpStatus.OK,m,0);
         }
@@ -137,8 +148,7 @@ public class UserController {
             @RequestParam(value = "sex") String sex,
             @RequestParam(value = "birthday") String birthday,
             @RequestParam(value = "email") String email,
-//            @RequestParam(value = "fileImage") String fileImage,
-            HttpServletRequest request) {
+            @RequestParam(value = "phone") String phone) {
         try {
             EditProfileRequest profile = new EditProfileRequest();
             profile.setId(id);
@@ -147,34 +157,32 @@ public class UserController {
             profile.setSex(sex);
             profile.setBirthday(birthday);
             profile.setEmail(email);
-//            profile.setImg(fileImage);
-            System.out.println("vao duoc profile");
+            profile.setPhone(phone);
 
             String nameImage = "";
-            System.out.println("img 2: "+fileImage.getOriginalFilename());
+            UserDto u = userService.findbyId(profile.getId());
+            if (u != null){
+                if (fileImage != null && !fileImage.isEmpty()){
 
-            if (fileImage != null && !fileImage.isEmpty()){
-                System.out.println("loi 1");
-                //tao duong dan den thu muc fontend
-                String filePath=FOLDER_PATH+fileImage.getOriginalFilename();
+                    nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
 
-                //chuyen file anh do sang thu muc fontend
-                fileImage.transferTo(new File(filePath));
-                System.out.println("filePath: "+filePath);
+                    //tao duong dan den thu muc fontend , tao random truoc ten file anh
+                    String filePath=FOLDER_PATH+nameImage;
 
-                nameImage = StringUtils.cleanPath(fileImage.getOriginalFilename());
-                System.out.println("loi 2");
-                System.out.println("nameImage: "+nameImage);
+                    //chuyen file anh do sang thu muc fontend
+                    fileImage.transferTo(new File(filePath));
+                    System.out.println("filePath: "+filePath);
 
-                profile.setImg(nameImage);
+
+                    profile.setImg(nameImage);
+                }
+
+                boolean res = userService.update(profile);
+                if (res)
+                    return ResponseHandler.responseBuilder("success", "post profile user success", HttpStatus.OK,"",0);
             }
 
-            System.out.println("id: "+profile.toString());
-            UserDto u = userService.findbyId(profile.getId());
-            if (u != null)
-                userService.update(profile);
-
-            return ResponseHandler.responseBuilder("success", "post profile user success", HttpStatus.OK,"",0);
+            return ResponseHandler.responseBuilder("error", "post profile user failed !!", HttpStatus.OK,"",0);
         }
         catch (Exception e){
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
@@ -201,4 +209,7 @@ public class UserController {
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
         }
     }
+
+
+
 }

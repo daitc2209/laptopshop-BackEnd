@@ -4,7 +4,6 @@ import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.ProductDto;
 import com.datn.laptopshop.dto.request.FilterProductRequest;
 import com.datn.laptopshop.service.IBrandService;
-import com.datn.laptopshop.service.ICartService;
 import com.datn.laptopshop.service.ICategoryService;
 import com.datn.laptopshop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +54,22 @@ public class StoreController {
         m.put("brand", brandService.findAll());
         m.put("category", categoryService.findAll());
         m.put("totalPages", listPageProduct.getTotalPages());
+        m.put("currentPage", page);
         m.put("listProduct",p);
 
         return ResponseHandler.responseBuilder("success","Get filter product success",HttpStatus.OK,m,0);
     }
 
     @PostMapping("/store")
-    public ResponseEntity<Object> showStore(
-            @RequestBody FilterProductRequest filterProduct,
+    public ResponseEntity<Object> showStorePost(
+            @RequestParam(name = "sort",required = false) String sort,
+            @RequestParam(name = "category",required = false) String categoryName,
+            @RequestParam(name = "brand",required = false) String brandName,
+            @RequestParam(name = "price",required = false) String price,
             @RequestParam(name = "page",defaultValue = "1") int page){
         int limit = 8;
+        FilterProductRequest filterProduct = new FilterProductRequest(sort,categoryName,brandName,price);
+
         System.out.println("page in post: "+page);
         if (filterProduct.getBrandName() == null || filterProduct.getCateogryName() == null){
             filterProduct.setBrandName("all");
@@ -81,6 +86,7 @@ public class StoreController {
         m.put("brand", brandService.findAll());
         m.put("category", categoryService.findAll());
         m.put("totalPages", listPageProduct.getTotalPages());
+        m.put("currentPage", page);
         m.put("listProduct",p);
 
         return ResponseHandler.responseBuilder("success","Get filter product success",HttpStatus.OK,m,0);

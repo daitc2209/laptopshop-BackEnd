@@ -17,6 +17,7 @@ public class EditProfileRequest {
     private String sex;
     private String birthday;
     private String email;
+    private String phone;
 
     @Override
     public String toString() {

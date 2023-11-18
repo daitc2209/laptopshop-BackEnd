@@ -1,6 +1,10 @@
 package com.datn.laptopshop.repos;
 
+import com.datn.laptopshop.dto.ProductDto;
 import com.datn.laptopshop.entity.Product;
+import com.datn.laptopshop.entity.User;
+import com.datn.laptopshop.enums.AuthenticationType;
+import com.datn.laptopshop.enums.StateUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,30 +38,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 Double maxPrice,
                                 Pageable pageable
                                 );
-//    Page<Product> filterProduct(String brand,
-//                                String category,
-//                                Double minPrice,
-//                                Double maxPrice,
-//                                Pageable pageable
-//    );
 
-//    @Query("SELECT p\n" +
-//            "FROM Product p, Brand b, Category c \n" +
-//            "WHERE p.brand.id = b.id AND p.category.id = c.id\n" +
-//            "AND (?1 IS NULL OR b.name LIKE %?1%)\n" +
-//            "AND (?2 IS NULL OR c.name LIKE %?2%)\n" +
-//            "AND (?3 IS NULL OR p.price >= ?3)\n" +
-//            "AND (?4 IS NULL OR p.price <= ?4)\n" +
-//            "ORDER BY CASE WHEN ?5 = 'asc' THEN p.name END ASC, " +
-//            "         CASE WHEN ?5 = 'desc' THEN p.name END DESC, " +
-//            "         CASE WHEN ?6 = 'asc' THEN p.price END ASC, " +
-//            "         CASE WHEN ?6 = 'desc' THEN p.price END DESC"
-//    )
-//    List<Product> filterProductPost(String brand,
-//                                String category,
-//                                Double minPrice,
-//                                Double maxPrice,
-//                                String sortByName,
-//                                String sortByPrice
-//    );
+    @Query("SELECT p FROM Product p where concat(p.name, p.brand.name, p.category.name) like %?1% ")
+    List<Product> findByNameStartsWith(String term);
+
+    @Query("select p from Product p where " +
+            "(?1 is null or ?1 = '' or p.name like %?1%) " +
+            "and (?2 is null or ?2 = -1 or p.price = ?2) " +
+            "and (?3 is null or ?3 = -1 or p.discount = ?3) " +
+            "and (?4 is null or ?4 = 0 or p.category.id = ?4) " +
+            "and (?5 is null or ?5 = 0 or p.brand.id = ?5) ")
+    Page<Product> findAll(String name,
+                             int price,
+                             int discount,
+                             long categoryName,
+                             long brandName,
+                             Pageable pageable);
 }

@@ -1,6 +1,5 @@
-package com.datn.laptopshop.dto;
+package com.datn.laptopshop.dto.request;
 
-import com.datn.laptopshop.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,15 +9,17 @@ import java.lang.reflect.Field;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto {
-    private Long id;
-    private String name;
+@AllArgsConstructor
+public class AddUserRequest {
+    private String fullname;
 
-    public CategoryDto toCateDto(Category category){
-        return new CategoryDto(category.getId(), category.getName());
-    }
+    private String email;
+
+    private String password;
+
+    private Long role;
+
     public boolean isEmpty()  {
         for (Field field : this.getClass().getDeclaredFields()) {
             try {

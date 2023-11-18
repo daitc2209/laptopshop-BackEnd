@@ -17,6 +17,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,7 +59,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/login","/api/register","/api/cart/**",
-                        "/api/store/**",
+                        "/api/store/**","/api/search/**","/api/news","/api/news/**",
                         "/api/register/**","/api/getAllProduct","/api/checkout/vnpay").permitAll()
 //                        .requestMatchers("/api/register").hasRole("ADMIN")
                         .requestMatchers("").hasAnyRole("ADMIN","USER")

@@ -1,6 +1,5 @@
-package com.datn.laptopshop.dto;
+package com.datn.laptopshop.dto.request;
 
-import com.datn.laptopshop.entity.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,15 +9,15 @@ import java.lang.reflect.Field;
 
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto {
-    private Long id;
+@AllArgsConstructor
+public class SearchProductRequest {
     private String name;
+    private int price;
+    private int discount;
+    private long categoryName;
+    private long brandName;
 
-    public CategoryDto toCateDto(Category category){
-        return new CategoryDto(category.getId(), category.getName());
-    }
     public boolean isEmpty()  {
         for (Field field : this.getClass().getDeclaredFields()) {
             try {
@@ -31,5 +30,16 @@ public class CategoryDto {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "SearchProductRequest{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", discount=" + discount +
+                ", categoryName='" + categoryName + '\'' +
+                ", brandName='" + brandName + '\'' +
+                '}';
     }
 }

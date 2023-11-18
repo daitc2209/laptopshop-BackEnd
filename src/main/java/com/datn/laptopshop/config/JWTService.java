@@ -40,7 +40,7 @@ public class JWTService {
     public String extractUserRole(String token) {
         Claims claims = extractAllClaims(token);
         List<String> roles = (List<String>) claims.get("role");
-        if(roles.get(0).equals("ROLE_USER") && !roles.isEmpty()){
+        if(roles.get(0).equals("ROLE_USER") || roles.get(0).equals("ROLE_ADMIN") && !roles.isEmpty()){
             return roles.get(0);
         }
         else if (roles.get(0).equals("SCOPE_openid") && !roles.isEmpty()) {
@@ -63,7 +63,7 @@ public class JWTService {
                 .claim("role",roles)
                 .setSubject((userDetails.getUsername()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+(10*60*10000)))
+                .setExpiration(new Date(System.currentTimeMillis()+(100*60*10000)))
                 .signWith(getSignInKey(),SignatureAlgorithm.HS256)
                 .compact();
     }

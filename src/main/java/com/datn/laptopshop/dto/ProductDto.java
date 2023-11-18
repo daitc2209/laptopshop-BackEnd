@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.Field;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -15,9 +17,9 @@ public class ProductDto {
     private String categoryName;
     private String brandName;
     private String name;
-    private Integer price;
-    private Integer discount;
-    private Integer quantity;
+    private int price;
+    private int discount;
+    private int quantity;
     private String img;
     private String description;
 
@@ -31,6 +33,20 @@ public class ProductDto {
                 product.getQuantity(),
                 product.getImg(),
                 product.getDescription());
+    }
+
+    public boolean isEmpty()  {
+        for (Field field : this.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                if (field.get(this)!=null) {
+                    return false;
+                }
+            } catch (Exception e) {
+                System.out.println("Exception occured in processing");
+            }
+        }
+        return true;
     }
 
     @Override
