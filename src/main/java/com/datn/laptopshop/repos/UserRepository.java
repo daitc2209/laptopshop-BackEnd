@@ -15,11 +15,15 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("select u from User u where u.email = ?1")
+    @Query("select u from User u where u.username = ?1")
+    Optional<User> findUserByUsername(String username);
+
+    @Query("select u from User u where u.email = ?1 ")
     Optional<User> findUserByEmail(String email);
 
-    @Query("select u from User u where u.email = ?1 and u.stateUser = ?2 and u.authType = ?3")
-    Optional<User> findByEmailAndStateUserAndAuthType(String email, StateUser actived, AuthenticationType authType);
+    @Query("select u from User u where (?1 is null or ?1 = '' or u.username = ?1)" +
+            " and u.email = ?2 and u.stateUser = ?3 and u.authType = ?4")
+    Optional<User> findByEmailAndStateUserAndAuthType(String username ,String email, StateUser actived, AuthenticationType authType);
 
     @Query("select u from User u where u.registerToken = ?1")
     Optional<User> findByRegisterToken(String token);

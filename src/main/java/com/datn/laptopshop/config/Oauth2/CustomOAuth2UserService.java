@@ -33,7 +33,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         CustomOAuth2User customOAuth2User = new CustomOAuth2User(user);
 
         AuthenticationType authType = AuthenticationType.valueOf(oauth2ClientName.toUpperCase());
-        Optional<User> u = userRepository.findByEmailAndStateUserAndAuthType(customOAuth2User.getEmail(), StateUser.ACTIVED, authType);
+        Optional<User> u = userRepository.findByEmailAndStateUserAndAuthType("",customOAuth2User.getEmail(), StateUser.ACTIVED, authType);
         if (!u.isPresent()) {
             customOAuth2User.setId(registerOauth2(customOAuth2User, authType));
         } else {

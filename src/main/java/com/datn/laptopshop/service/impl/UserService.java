@@ -57,7 +57,7 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public ResponseEntity<Object> login(SignInRequest u) throws Exception{
-        var user = userRepository.findUserByEmail(u.getEmail());
+        var user = userRepository.findUserByUsername(u.getUsername());
         Map m = new HashMap<>();
         if(user.isPresent()){
             if (passwordEncoder.matches(u.getPassword(), user.get().getPassword())){
@@ -82,21 +82,23 @@ public class UserService implements IUserService, UserDetailsService {
         try{
             if (u.getFullname() == null || u.getFullname() == ""
                     || u.getEmail()==null || u.getEmail() == ""
+                    || u.getUsername()==null || u.getUsername() == ""
                     || u.getPassword() == null || u.getPassword() == ""
                     || u.getAddress() == null || u.getAddress()=="")
                 return null;
 
-            Optional<User> userActive = userRepository.findByEmailAndStateUserAndAuthType(u.getEmail(), StateUser.ACTIVED, AuthenticationType.DATABASE);
+            Optional<User> userActive = userRepository.findByEmailAndStateUserAndAuthType(u.getUsername(),u.getEmail(), StateUser.ACTIVED, AuthenticationType.DATABASE);
             if (!userActive.isEmpty()) {
                 throw new Exception("The email already exists!");
             }
-            Optional<User> userPending = userRepository.findByEmailAndStateUserAndAuthType(u.getEmail(), StateUser.PENDING, AuthenticationType.DATABASE);
+            Optional<User> userPending = userRepository.findByEmailAndStateUserAndAuthType(u.getUsername(),u.getEmail(), StateUser.PENDING, AuthenticationType.DATABASE);
             if(!userPending.isEmpty()) {
                 UserDto userDto = new UserDto().toUserDTO(userPending.get());
                 return userDto;
             }
             User user = new User();
             user.setFullname(u.getFullname());
+            user.setUsername(u.getUsername());
             user.setHash_pw(passwordEncoder.encode(u.getPassword()));
             user.setEmail(u.getEmail());
             user.setAddress(u.getAddress());
@@ -168,16 +170,16 @@ public class UserService implements IUserService, UserDetailsService {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
-        final String userEmail;
+        final String username;
         if(authHeader==null || !authHeader.startsWith("Bearer ")){
             return;
         }
         refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
-        System.out.println("da vao refresh 1 !! userEmail: "+ userEmail);
-        if(userEmail != null){
+        username = jwtService.extractUsername(refreshToken);
+        System.out.println("da vao refresh 1 !! userEmail: "+ username);
+        if(username != null){
             System.out.println("da vao refresh 2");
-            var user = userRepository.findUserByEmail(userEmail).orElseThrow();
+            var user = userRepository.findUserByUsername(username).orElseThrow();
             System.out.println("user: "+user);
             if(jwtService.isTokenValid(refreshToken, user)){
                 System.out.println("da vao refresh 3");
@@ -215,6 +217,15 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
+    public UserDto findUserByUsername(String name) {
+        var u = userRepository.findUserByUsername(name);
+        if (u.isPresent()){
+            return new UserDto().toUserDTO(u.get());
+        }
+        return null;
+    }
+
+    @Override
     public UserDto findbyId(long id) {
         var u = userRepository.findById(id);
         if (u.isPresent())
@@ -235,6 +246,8 @@ public class UserService implements IUserService, UserDetailsService {
             u.get().setFullname(profile.getFullname());
             if (profile.getAddress() != null)
                 u.get().setAddress(profile.getAddress());
+            if (profile.getEmail() != null)
+                u.get().setEmail(profile.getEmail());
             if (profile.getSex() != null)
                 u.get().setGender(profile.getSex());
             if (!profile.getBirthday().equals("null"))
@@ -272,6 +285,8 @@ public class UserService implements IUserService, UserDetailsService {
                 u.get().setDob(edit.getBirthday());
             if (edit.getImg() != null)
                 u.get().setImg(edit.getImg());
+            if (edit.getEmail() != null)
+                u.get().setEmail(edit.getEmail());
             if (edit.getPhone() != null)
                 u.get().setPhone(edit.getPhone());
             if (edit.getStateUser() != null)
@@ -317,7 +332,6 @@ public class UserService implements IUserService, UserDetailsService {
             {
                 t.get().setRevoked(true);
                 t.get().setExpired(true);
-//                tokenRepository.save(t.get());
                 tokenRepository.delete(t.get());
                 SecurityContextHolder.clearContext();
                 return true;
@@ -350,6 +364,7 @@ public class UserService implements IUserService, UserDetailsService {
         User u = new User();
         u.setFullname(addUserRequest.getFullname());
         u.setEmail(addUserRequest.getEmail());
+        u.setUsername(addUserRequest.getUsername());
         u.setHash_pw(passwordEncoder.encode(addUserRequest.getPassword()));
         u.setGender("MALE");
         u.setAddress(" ");
@@ -396,12 +411,15 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        User user = userRepository.findUserByEmail(email)
+//                .orElseThrow(() -> new UsernameNotFoundException(email + " not found"));
         User user = userRepository.findUserByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email + " not found"));
+                .orElseGet(() -> userRepository.findUserByUsername(email)
+                        .orElseThrow(() -> new UsernameNotFoundException(email + " not found")));
         var authorities = new ArrayList<GrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
         if (user.getPassword() != null && user.getPassword() != "")
-            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),authorities);
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),authorities);
         else {
             return new org.springframework.security.core.userdetails.User(user.getEmail(), "0906088493",authorities);
         }

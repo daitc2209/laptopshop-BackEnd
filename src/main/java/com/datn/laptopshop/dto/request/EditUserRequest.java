@@ -22,6 +22,8 @@ public class EditUserRequest {
 
     private String birthday;
 
+    private String email;
+
     private String address;
 
     private StateUser stateUser;
@@ -53,6 +55,7 @@ public class EditUserRequest {
         return "EditUserRequest{" +
                 "id=" + id +
                 ", fullname='" + fullname + '\'' +
+                ", email='" + email + '\'' +
                 ", sex='" + sex + '\'' +
                 ", birthday='" + birthday + '\'' +
                 ", address='" + address + '\'' +

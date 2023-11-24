@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody SignUpRequest u, HttpServletRequest request) {
+    public ResponseEntity<Object> register(@RequestBody SignUpRequest u) {
 
         try {
             String token = UUID.randomUUID().toString();
@@ -120,6 +120,9 @@ public class UserController {
     public ResponseEntity<Object> getProfile(){
         try{
             UserDto user = userService.findUserByEmail(IdLogged.getUser());
+            if (user == null){
+                user = userService.findUserByUsername(IdLogged.getUser());
+            }
             Map m = new HashMap<>();
             if (user != null){
                 EditProfileRequest profile = new EditProfileRequest();
@@ -130,6 +133,7 @@ public class UserController {
                 profile.setSex(user.getGender());
                 profile.setBirthday(user.getDob());
                 profile.setFullname(user.getFullname());
+                profile.setPhone(user.getPhone());
                 m.put("profile",profile);
             }
             return ResponseHandler.responseBuilder("success", "get profile user success", HttpStatus.OK,m,0);
@@ -197,6 +201,9 @@ public class UserController {
                 return ResponseHandler.responseBuilder("error", "request change pw null or oldPW = newPW", HttpStatus.BAD_REQUEST,"",99);
 
             var u = userService.findUserByEmail(IdLogged.getUser());
+            if (u == null){
+                u = userService.findUserByUsername(IdLogged.getUser());
+            }
             if (u != null){
                 boolean t = userService.changePW(u.getId(),oldPW, newPW);
                 if (t)

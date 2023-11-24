@@ -215,7 +215,8 @@ public class ProductService implements IProductService {
         oldProductEntity.get().setName(productDto.getName());
         oldProductEntity.get().setPrice(productDto.getPrice());
         oldProductEntity.get().setDiscount(productDto.getDiscount());
-        oldProductEntity.get().setImg(productDto.getImg());
+        if (productDto.getImg() != null)
+            oldProductEntity.get().setImg(productDto.getImg());
         oldProductEntity.get().setQuantity(productDto.getQuantity());
         oldProductEntity.get().setDescription(productDto.getDescription());
 

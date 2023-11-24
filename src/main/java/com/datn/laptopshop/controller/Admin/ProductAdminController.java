@@ -141,13 +141,15 @@ public class ProductAdminController {
             productDto.setDiscount(discount);
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
-            String nameImage = "";
             if (fileImage != null && !fileImage.isEmpty()) {
+                String nameImage = "";
                 nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
                 String filePath = FOLDER_PATH +nameImage;
                 fileImage.transferTo(new File(filePath));
                 productDto.setImg(nameImage);
             }
+
+            System.out.println("productdto: "+productDto.toString());
             boolean res = productService.update(productDto);
             if (res)
                 return ResponseHandler.responseBuilder("success", " edit product successfully", HttpStatus.OK,"",0);

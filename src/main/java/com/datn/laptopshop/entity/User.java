@@ -29,14 +29,17 @@ public class User implements UserDetails{
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "hash_pw")
+    private String hash_pw;
+
     @Column(name = "fullname")
     private String fullname;
 
     @Column(name = "email")
     private String email;
-
-    @Column(name = "hash_pw")
-    private String hash_pw;
 
     @Column(name = "gender")
     private String gender;
@@ -113,7 +116,7 @@ public class User implements UserDetails{
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

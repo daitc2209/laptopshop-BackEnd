@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
+    private String username;
     private String fullname;
     private String email;
     private String phone;
@@ -26,7 +27,7 @@ public class UserDto {
     private String img;
 
     public UserDto toUserDTO(User user) {
-        return new UserDto(user.getId(), user.getFullname(), user.getEmail(), user.getPhone(),
+        return new UserDto(user.getId(), user.getUsername(),user.getFullname(), user.getEmail(), user.getPhone(),
                 user.getGender(), user.getDob(), user.getAddress(), user.getStateUser(), user.getAuthType(),
                 user.getRole().getName(), user.getImg());
     }

@@ -29,11 +29,11 @@ public class PurchaseHistoryController {
             Map m = new HashMap<>();
 
             List<OrderDto> order = orderService.findbyUser(IdLogged.getUser());
+            System.out.println("IdLogged.getUser(): "+IdLogged.getUser());
+//            if (order.isEmpty())
+//                return ResponseHandler.responseBuilder("Error","Khong tim thay !!!",
+//                        HttpStatus.BAD_REQUEST,"",99);
             m.put("order",order);
-            if (order.isEmpty())
-                return ResponseHandler.responseBuilder("Error","Khong tim thay !!!",
-                        HttpStatus.BAD_REQUEST,"",99);
-
             return ResponseHandler.responseBuilder("Message","get Success",
                     HttpStatus.OK,m,0);
         }

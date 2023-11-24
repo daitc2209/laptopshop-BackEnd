@@ -11,14 +11,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SignInRequest {
 
-    private String email;
+    private String username;
 
     private String password;
 
     @Override
     public String toString() {
         return "SignInRequest{" +
-                "email='" + email + '\'' +
+                "username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
     }

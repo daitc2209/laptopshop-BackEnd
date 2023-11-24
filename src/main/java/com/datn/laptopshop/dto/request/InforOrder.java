@@ -16,6 +16,7 @@ public class InforOrder {
 
     private String phone;
     private String address_delivery;
+    private String note;
 
     private int num;
     private int totalMoney;

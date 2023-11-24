@@ -61,6 +61,9 @@ public class Order {
     @Column(name = "state_order")
     private StateOrder stateOrder;
 
+    @Column(name = "note")
+    private String note;
+
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<OrderDetail> orderdetail;

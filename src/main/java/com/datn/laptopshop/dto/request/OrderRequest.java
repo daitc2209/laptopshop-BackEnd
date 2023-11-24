@@ -15,6 +15,7 @@ public class OrderRequest {
     private String phone;
 
     private String address;
+    private String note;
     private String bankCode;
 
     @Override

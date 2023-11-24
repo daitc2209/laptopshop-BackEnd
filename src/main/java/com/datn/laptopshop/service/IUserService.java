@@ -28,6 +28,8 @@ public interface IUserService {
 
     User findUserByEmailGG(String name);
 
+    UserDto findUserByUsername(String name);
+
     UserDto findbyId(long id);
 
     boolean update(EditProfileRequest profile);

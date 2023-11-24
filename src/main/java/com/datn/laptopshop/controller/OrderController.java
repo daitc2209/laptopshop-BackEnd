@@ -45,8 +45,11 @@ public class OrderController {
                         HttpStatus.BAD_REQUEST,"",99);
             }
             else {
-                m.put("email",userService.findUserByEmail(IdLogged.getUser()).getEmail());
-                m.put("fullname",userService.findUserByEmail(IdLogged.getUser()).getFullname());
+                var u = userService.findUserByUsername(IdLogged.getUser());
+                if (u == null)
+                    u = userService.findUserByEmail(IdLogged.getUser());
+                m.put("email",u.getEmail());
+                m.put("fullname",u.getFullname());
                 m.put("listCart",cartService.getAllItems());
                 m.put("totalQuantity",cartService.getTotalQuantity());
                 m.put("totalMoney",cartService.getTotalMoney());
@@ -66,12 +69,16 @@ public class OrderController {
         try {
             Map m = new HashMap<>();
             InforOrder inforOrder = new InforOrder();
-            inforOrder.setUserId(userService.findUserByEmail(IdLogged.getUser()).getId());
-            inforOrder.setName(userService.findUserByEmail(IdLogged.getUser()).getFullname());
+            var u = userService.findUserByUsername(IdLogged.getUser());
+            if (u == null)
+                u = userService.findUserByEmail(IdLogged.getUser());
+            inforOrder.setUserId(u.getId());
+            inforOrder.setName(u.getFullname());
             inforOrder.setNum(cartService.getTotalQuantity());
             inforOrder.setTotalMoney(cartService.getTotalMoney());
 
             inforOrder.setPhone(order.getPhone());
+            inforOrder.setNote(order.getNote());
             inforOrder.setPayment(order.getTypePayment());
             inforOrder.setAddress_delivery(order.getAddress());
 

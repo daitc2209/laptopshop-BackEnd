@@ -30,10 +30,11 @@ public class OrderDto {
     private StateCheckout stateCheckout;
     private StateOrder stateOrder;
     private List<OrderDetailDto> orderdetail;
+    private String note;
 
     public OrderDto(Long id, Long idUser, String codeOrder, String name, String email,
                     String phone, String addressDelivery, Date createdAt,
-                    int num, int totalMoney, String payment, StateCheckout stateCheckout, StateOrder stateOrder) {
+                    int num, int totalMoney, String payment, StateCheckout stateCheckout, StateOrder stateOrder, String note) {
         this.id = id;
         this.user=idUser;
         this.codeOrder = codeOrder;
@@ -47,12 +48,13 @@ public class OrderDto {
         this.payment=payment;
         this.stateCheckout=stateCheckout;
         this.stateOrder=stateOrder;
+        this.note=note;
     }
 
     public OrderDto toOrderDto(Order o){
         return new OrderDto(o.getId(),o.getUser().getId(),o.getCodeOrder(),o.getName(),
                 o.getEmail(),o.getPhone(),o.getAddress_delivery(),o.getCreated_at(),o.getNum(),
-                o.getTotal_money(),o.getPayment(),o.getStateCheckout(),o.getStateOrder());
+                o.getTotal_money(),o.getPayment(),o.getStateCheckout(),o.getStateOrder(),o.getNote());
     }
 
     @Override
@@ -72,6 +74,7 @@ public class OrderDto {
                 ", stateCheckout=" + stateCheckout +
                 ", stateOrder=" + stateOrder +
                 ", orderdetail=" + orderdetail +
+                ", note=" + note +
                 '}';
     }
 }

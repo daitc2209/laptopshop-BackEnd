@@ -14,6 +14,8 @@ public class SignUpRequest {
 
     private String email;
 
+    private String username;
+
     private String password;
 
     private String address;
@@ -23,6 +25,7 @@ public class SignUpRequest {
         return "SignUpRequest{" +
                 "fullname='" + fullname + '\'' +
                 ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 '}';

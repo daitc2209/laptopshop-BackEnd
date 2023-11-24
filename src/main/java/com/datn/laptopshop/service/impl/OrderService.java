@@ -3,17 +3,13 @@ package com.datn.laptopshop.service.impl;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.*;
 import com.datn.laptopshop.dto.request.InforOrder;
-import com.datn.laptopshop.entity.New;
+import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.Order;
 import com.datn.laptopshop.entity.OrderDetail;
 import com.datn.laptopshop.enums.StateCheckout;
 import com.datn.laptopshop.enums.StateOrder;
-import com.datn.laptopshop.repos.OrderDetailRepository;
-import com.datn.laptopshop.repos.OrderRepository;
-import com.datn.laptopshop.repos.ProductRepository;
-import com.datn.laptopshop.repos.UserRepository;
+import com.datn.laptopshop.repos.*;
 import com.datn.laptopshop.service.IOrderService;
-import com.datn.laptopshop.service.IUserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -54,7 +50,7 @@ public class OrderService implements IOrderService {
         var u = userRepository.findById(inforOrder.getUserId());
         if (u == null)
             return null;
-
+        int delivery = 40000;
         Order o = new Order();
         o.setUser(u.get());
         o.setName(u.get().getFullname());
@@ -62,8 +58,9 @@ public class OrderService implements IOrderService {
         o.setPhone(inforOrder.getPhone());
         o.setAddress_delivery(inforOrder.getAddress_delivery());
         o.setNum(inforOrder.getNum());
-        o.setTotal_money(inforOrder.getTotalMoney());
+        o.setTotal_money(inforOrder.getTotalMoney() + delivery);
         o.setPayment(inforOrder.getPayment());
+        o.setNote(inforOrder.getNote());
         o.setCreated_at(new Date());
         o.setStateCheckout(StateCheckout.UNPAID);
         o.setStateOrder(StateOrder.PENDING);
@@ -125,7 +122,10 @@ public class OrderService implements IOrderService {
 
         List<Order> listOrder = orderRepository.findByUser(email);
         if (listOrder.isEmpty()){
-            return null;
+            System.out.println("vao day roi");
+            listOrder = orderRepository.findByUsername(email);
+            if (listOrder.isEmpty())
+                return null;
         }
 
         List<OrderDto> listOrderDto = new ArrayList<>();
@@ -196,8 +196,11 @@ public class OrderService implements IOrderService {
         }
 
         // If saving modification fail, return false
-        if (status.equals("RECEIVED"))
+        if (status == StateOrder.RECEIVED)
+        {
             order.get().setStateCheckout(StateCheckout.PAID);
+        }
+
         order.get().setStateOrder(status);
         if (orderRepository.save(order.get()) == null) {
             return false;
@@ -206,19 +209,4 @@ public class OrderService implements IOrderService {
         return true;
     }
 
-    @Override
-    public Page<OrderDto> revenue(int page, int limit, StateCheckout stateCheckout, StateOrder stateOrder, String payment, Date start, Date end) {
-        Pageable pageable = PageRequest.of(page-1, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
-         orderRepository.revenue(
-                stateCheckout,
-                stateOrder,
-                payment,
-                start,
-                end,
-                pageable);
-
-
-
-        return null;
-    }
 }
