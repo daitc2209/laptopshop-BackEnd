@@ -122,7 +122,6 @@ public class OrderService implements IOrderService {
 
         List<Order> listOrder = orderRepository.findByUser(email);
         if (listOrder.isEmpty()){
-            System.out.println("vao day roi");
             listOrder = orderRepository.findByUsername(email);
             if (listOrder.isEmpty())
                 return null;

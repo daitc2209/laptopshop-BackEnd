@@ -29,14 +29,14 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/checkout")
 public class CheckoutController {
-	@SuppressWarnings("unused")
-	private static final Logger logger = LoggerFactory.getLogger(CheckoutController.class);
+    @SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(CheckoutController.class);
 
-	@Autowired
-	private ICheckoutService checkoutService;
+    @Autowired
+    private ICheckoutService checkoutService;
 
-	@Autowired
-	private IOrderService orderService;
+    @Autowired
+    private IOrderService orderService;
 
     @Autowired
     private IOrderDetailService orderDetailService;
@@ -47,45 +47,47 @@ public class CheckoutController {
     @Autowired
     private JavaMail javaMail;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@GetMapping("/vnpay")
-	public ResponseEntity<Object> PaymentVNPAY(
-			@RequestParam("codeOrder") String codeOrder,
-			@RequestParam("bankCode") String bankCode) throws IOException {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @GetMapping("/vnpay")
+    public ResponseEntity<Object> PaymentVNPAY(
+            @RequestParam("codeOrder") String codeOrder,
+            @RequestParam("bankCode") String bankCode) throws IOException {
 
         System.out.println("da vao PaymentVNPAY ******************");
         System.out.println("bankCode trong PaymentVNPAY: "+bankCode);
 
-		OrderDto orderEntity = orderService.findByCodeOrder(codeOrder);
-		String vnp_Version = "2.1.0";
+        OrderDto orderEntity = orderService.findByCodeOrder(codeOrder);
+        String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        long amount = (long) (orderEntity.getTotal_money()*100);
-		String orderType = "other";
+        int amount = orderEntity.getTotal_money()*100;
+        System.out.println("amount: "+amount);
 
-		String vnp_TxnRef = codeOrder;
+        String orderType = "other";
+
+        String vnp_TxnRef = codeOrder;
         String vnp_TmnCode = ConfigVNPAY.vnp_TmnCode;
-		String vnp_IpAddr = "127.0.0.1";
+        String vnp_IpAddr = "127.0.0.1";
         
         Map<String, String> vnp_Params = new HashMap<>();
         vnp_Params.put("vnp_Version", vnp_Version);
         vnp_Params.put("vnp_Command", vnp_Command);
-		vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef );
-		vnp_Params.put("vnp_OrderType", orderType);
+        vnp_Params.put("vnp_OrderType", orderType);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", ConfigVNPAY.vnp_Returnurl);
-		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(orderEntity.getCreated_at());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-		System.out.println("vnp_params: "+ vnp_Params);
+        System.out.println("vnp_params: "+ vnp_Params);
 
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
@@ -124,42 +126,43 @@ public class CheckoutController {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("Location", paymentUrl)
                 .body(m);
-	}
+    }
 
-	@GetMapping("/vnpay/info")
-	public ResponseEntity<Object> infoPayment(
-			@RequestParam("vnp_Amount") String vnp_Amount,
-			@RequestParam("vnp_BankCode") String vnp_BankCode,
-			@RequestParam("vnp_CardType") String vnp_CardType,
-			@RequestParam("vnp_OrderInfo") String vnp_OrderInfo,
-			@RequestParam("vnp_PayDate") String vnp_PayDate,
-			@RequestParam("vnp_ResponseCode") String vnp_ResponseCode,
-			@RequestParam("vnp_TxnRef") String vnp_TxnRef ) throws UnsupportedEncodingException, MessagingException {
+    @GetMapping("/vnpay/info")
+    public ResponseEntity<Object> infoPayment(
+            @RequestParam("vnp_Amount") String vnp_Amount,
+            @RequestParam("vnp_BankCode") String vnp_BankCode,
+            @RequestParam("vnp_CardType") String vnp_CardType,
+            @RequestParam("vnp_OrderInfo") String vnp_OrderInfo,
+            @RequestParam("vnp_PayDate") String vnp_PayDate,
+            @RequestParam("vnp_ResponseCode") String vnp_ResponseCode,
+            @RequestParam("vnp_TxnRef") String vnp_TxnRef ) throws UnsupportedEncodingException, MessagingException {
 
         Map m = new HashMap<>();
 
-		OrderDto orderEntity = orderService.findByCodeOrder(vnp_TxnRef);
-		System.out.println("da vao infoPayment ****@@@@@@@@@******");
-		if("00".equals(vnp_ResponseCode)) {
-			CheckOutDto checkoutDto = new CheckOutDto();
-			//Accounts and Orders Paid
-			checkoutDto.setOrder(orderEntity.getId());
-			checkoutDto.setUser(orderEntity.getUser());
-			//Save information from vnpay returned
-			checkoutDto.setAmount(Integer.parseInt(vnp_Amount));
-			checkoutDto.setBankCode(vnp_BankCode);
-			checkoutDto.setCardType(vnp_CardType);
-			checkoutDto.setOrderInfo(vnp_OrderInfo);
-			checkoutDto.setPayDate(vnp_PayDate);
-			//Save Data
-			checkoutService.insert(checkoutDto);
-			//Change order status is successful payment
-			orderService.updateStateCheckout(orderEntity.getId(), StateCheckout.PAID);
+        OrderDto orderEntity = orderService.findByCodeOrder(vnp_TxnRef);
+        System.out.println("da vao infoPayment ****@@@@@@@@@******");
 
-			m.put("success", "Giao dịch thàng công");
-		}else {
-			m.put("error", "Giao dịch thất bại");
-		}
+        if("00".equals(vnp_ResponseCode)) {
+            CheckOutDto checkoutDto = new CheckOutDto();
+            //Accounts and Orders Paid
+            checkoutDto.setOrder(orderEntity.getId());
+            checkoutDto.setUser(orderEntity.getUser());
+            //Save information from vnpay returned
+            checkoutDto.setAmount(Integer.parseInt(vnp_Amount)/100);
+            checkoutDto.setBankCode(vnp_BankCode);
+            checkoutDto.setCardType(vnp_CardType);
+            checkoutDto.setOrderInfo(vnp_OrderInfo);
+            checkoutDto.setPayDate(vnp_PayDate);
+            //Save Data
+            checkoutService.insert(checkoutDto);
+            //Change order status is successful payment
+            orderService.updateStateCheckout(orderEntity.getId(), StateCheckout.PAID);
+
+            m.put("success", "Giao dịch thàng công");
+        }else {
+            m.put("error", "Giao dịch thất bại");
+        }
         boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(orderEntity.getId()));
         if (!b)
             return ResponseHandler.responseBuilder("Message","Check Out Failed!!!",
@@ -169,7 +172,7 @@ public class CheckoutController {
 
         return ResponseHandler.responseBuilder("Message","Check Out Success",
                 HttpStatus.OK,m,0);
-	}
+    }
 
     @GetMapping("/getBill")
     public ResponseEntity<Object> getBill(@RequestParam("id") long id){

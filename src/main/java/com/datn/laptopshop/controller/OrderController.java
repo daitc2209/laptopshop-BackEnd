@@ -76,7 +76,7 @@ public class OrderController {
             inforOrder.setName(u.getFullname());
             inforOrder.setNum(cartService.getTotalQuantity());
             inforOrder.setTotalMoney(cartService.getTotalMoney());
-
+            System.out.println("tong tien: "+cartService.getTotalMoney());
             inforOrder.setPhone(order.getPhone());
             inforOrder.setNote(order.getNote());
             inforOrder.setPayment(order.getTypePayment());

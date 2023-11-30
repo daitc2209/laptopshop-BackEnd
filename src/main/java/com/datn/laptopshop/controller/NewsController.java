@@ -25,7 +25,7 @@ public class NewsController {
     @GetMapping("/news")
     public ResponseEntity<?> getNews(@RequestParam(name = "page", defaultValue = "1") int page){
         try {
-            int limit = 2;
+            int limit = 4;
             Map m = new HashMap<>();
             var listNews = newsService.findAll(page,limit);
             m.put("listNews", listNews.getContent());

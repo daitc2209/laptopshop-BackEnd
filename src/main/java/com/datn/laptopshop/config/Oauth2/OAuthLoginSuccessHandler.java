@@ -44,8 +44,8 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
         String redirectUrl = "http://localhost:5173/auth/sign-in"
                 + "?token=" + token
-                + "&&refreshToken="+refreshToken
-                + "&&role="+ role;
+                + "&refreshToken="+refreshToken
+                + "&role="+ role;
         response.sendRedirect(redirectUrl);
 
     }
