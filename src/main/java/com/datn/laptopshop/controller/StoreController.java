@@ -34,47 +34,17 @@ public class StoreController {
             @RequestParam(name = "sort",required = false) String sort,
             @RequestParam(name = "category",required = false) String categoryName,
             @RequestParam(name = "brand",required = false) String brandName,
-            @RequestParam(name = "price",required = false) String price,
+            @RequestParam(name = "minPrice",defaultValue = "0") long minPrice,
+            @RequestParam(name = "maxPrice",defaultValue = "50000000") long maxPrice,
             @RequestParam(name = "page",defaultValue = "1") int page){
-        FilterProductRequest filterProduct = new FilterProductRequest(sort,categoryName,brandName,price);
-        int limit = 8;
-
-        if (filterProduct.getBrandName() == null || filterProduct.getCateogryName() == null){
+        FilterProductRequest filterProduct = new FilterProductRequest(sort,categoryName,brandName,minPrice,maxPrice);
+        int limit = 24;
+        if (filterProduct.getBrandName() == null
+                || filterProduct.getCateogryName() == null ){
             filterProduct.setBrandName("all");
             filterProduct.setSort("all");
-            filterProduct.setPrice("all");
-            filterProduct.setCateogryName("all");
-        }
-
-        Page<ProductDto> listPageProduct = productService.findAll(filterProduct,page,limit);
-
-        List<ProductDto> p = listPageProduct.getContent();
-
-        Map m = new HashMap<>();
-        m.put("brand", brandService.findAll());
-        m.put("category", categoryService.findAll());
-        m.put("totalPages", listPageProduct.getTotalPages());
-        m.put("currentPage", page);
-        m.put("listProduct",p);
-
-        return ResponseHandler.responseBuilder("success","Get filter product success",HttpStatus.OK,m,0);
-    }
-
-    @PostMapping("/store")
-    public ResponseEntity<Object> showStorePost(
-            @RequestParam(name = "sort",required = false) String sort,
-            @RequestParam(name = "category",required = false) String categoryName,
-            @RequestParam(name = "brand",required = false) String brandName,
-            @RequestParam(name = "price",required = false) String price,
-            @RequestParam(name = "page",defaultValue = "1") int page){
-        int limit = 8;
-        FilterProductRequest filterProduct = new FilterProductRequest(sort,categoryName,brandName,price);
-
-        System.out.println("page in post: "+page);
-        if (filterProduct.getBrandName() == null || filterProduct.getCateogryName() == null){
-            filterProduct.setBrandName("all");
-            filterProduct.setSort("all");
-            filterProduct.setPrice("all");
+            filterProduct.setMinPrice(0);
+            filterProduct.setMaxPrice(50000000);
             filterProduct.setCateogryName("all");
         }
 

@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.SavedRequestAwareAuthenti
 import org.springframework.stereotype.Component;
 import com.datn.laptopshop.entity.User;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @Component
 public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -24,7 +25,7 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                        Authentication authentication) throws ServletException, IOException {
+                                        Authentication authentication) throws IOException {
         CustomOAuth2User u = ((CustomOAuth2User) authentication.getPrincipal());
         System.out.println("user ben login success: "+ u);
         // Tạo token
@@ -32,11 +33,12 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         String refreshToken = jwtService.generateToken(u);
         userService.saveUserToken(userService.findUserByEmailGG(u.getUsername()),token);
         String role = "ROLE_USER";
+        String img = u.getImg();
+        String name = URLEncoder.encode(u.getName(), "UTF-8");;
         boolean hasRole = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         if(hasRole){
             role = "ROLE_ADMIN";
         }
-        System.out.println("token ben trong sso: " + token);
 
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -45,7 +47,9 @@ public class OAuthLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         String redirectUrl = "http://localhost:5173/auth/sign-in"
                 + "?token=" + token
                 + "&refreshToken="+refreshToken
-                + "&role="+ role;
+                + "&role="+ role
+                + "&name="+ name
+                + "&img="+img;
         response.sendRedirect(redirectUrl);
 
     }

@@ -1,20 +1,19 @@
 package com.datn.laptopshop.controller.Admin;
 
 import com.datn.laptopshop.config.ResponseHandler;
-import com.datn.laptopshop.dto.Revenue;
 import com.datn.laptopshop.service.IRevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin/revenue")
+@PreAuthorize("hasRole('ADMIN')")
 public class RevenueController {
 
     @Autowired

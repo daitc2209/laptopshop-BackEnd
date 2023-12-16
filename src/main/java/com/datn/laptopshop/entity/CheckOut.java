@@ -27,7 +27,7 @@ public class CheckOut {
     private User user;
 
     @Column(name = "amount")
-    private int amount;
+    private long amount;
 
     @Column(name = "bank_code")
     private String bankCode;

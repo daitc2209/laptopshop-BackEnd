@@ -54,4 +54,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                              long categoryName,
                              long brandName,
                              Pageable pageable);
+
+    @Query("select count(p) > 0 from Product p where p.category.id = ?1")
+    boolean existsByCategory(long id);
+
+    @Query("select count(p) > 0 from Product p where p.brand.id = ?1")
+    boolean existsByBrand(long id);
 }

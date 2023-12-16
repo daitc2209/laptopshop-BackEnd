@@ -5,6 +5,7 @@ import com.datn.laptopshop.dto.NewsDto;
 import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.New;
 import com.datn.laptopshop.repos.CategoryRepository;
+import com.datn.laptopshop.repos.ProductRepository;
 import com.datn.laptopshop.service.ICategoryService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class CategoryService implements ICategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<CategoryDto> findAll() {
@@ -135,6 +139,10 @@ public class CategoryService implements ICategoryService {
         // If the data does not exist, throw exception
         if (!categoryRepository.existsById(id)) {
             System.out.println("The category does not exist!");
+            return false;
+        }
+        if (productRepository.existsByCategory(id)){
+            System.out.println("The category exist in Product !!");
             return false;
         }
 

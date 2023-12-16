@@ -59,8 +59,7 @@ public class CheckoutController {
         OrderDto orderEntity = orderService.findByCodeOrder(codeOrder);
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        int amount = orderEntity.getTotal_money()*100;
-        System.out.println("amount: "+amount);
+        long amount = (long) (orderEntity.getTotal_money())*100;
 
         String orderType = "other";
 
@@ -142,6 +141,8 @@ public class CheckoutController {
 
         OrderDto orderEntity = orderService.findByCodeOrder(vnp_TxnRef);
         System.out.println("da vao infoPayment ****@@@@@@@@@******");
+        System.out.println("Integer.parseInt(vnp_Amount): " + Long.parseLong(vnp_Amount));
+        System.out.println("Integer.parseInt(vnp_Amount)/100: " + (Long.parseLong(vnp_Amount)/100));
 
         if("00".equals(vnp_ResponseCode)) {
             CheckOutDto checkoutDto = new CheckOutDto();
@@ -149,7 +150,7 @@ public class CheckoutController {
             checkoutDto.setOrder(orderEntity.getId());
             checkoutDto.setUser(orderEntity.getUser());
             //Save information from vnpay returned
-            checkoutDto.setAmount(Integer.parseInt(vnp_Amount)/100);
+            checkoutDto.setAmount(Long.parseLong(vnp_Amount)/100);
             checkoutDto.setBankCode(vnp_BankCode);
             checkoutDto.setCardType(vnp_CardType);
             checkoutDto.setOrderInfo(vnp_OrderInfo);

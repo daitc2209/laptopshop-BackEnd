@@ -8,9 +8,11 @@ import com.datn.laptopshop.dto.request.SearchUserRequest;
 import com.datn.laptopshop.enums.AuthenticationType;
 import com.datn.laptopshop.enums.StateUser;
 import com.datn.laptopshop.service.IUserService;
+import com.datn.laptopshop.utils.IdLogged;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +24,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/user")
+@PreAuthorize("hasRole('ADMIN')")
 public class UserAdminController {
     @Autowired
     private IUserService userService;
@@ -138,7 +141,7 @@ public class UserAdminController {
     @PostMapping("/lock")
     public ResponseEntity<?> lockUser(@RequestParam("id") long id){
         try {
-            boolean res = userService.lock(id);
+            boolean res = userService.lock(id, IdLogged.getUser());
             if (res){
                 return ResponseHandler.responseBuilder("success", "Lock user successfully!\"", HttpStatus.OK,"",0);
             }

@@ -32,9 +32,6 @@ public class OrderController {
     @Autowired
     private IOrderService orderService;
 
-    @Autowired
-    private IProductService productService;
-
     @GetMapping("/order")
     public ResponseEntity<Object> getOrder(){
         try {

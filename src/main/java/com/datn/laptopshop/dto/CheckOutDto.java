@@ -14,7 +14,7 @@ public class CheckOutDto {
     private Long id;
     private Long order;
     private Long user;
-    private int amount;
+    private long amount;
     private String bankCode;
     private String cardType;
     private String orderInfo;

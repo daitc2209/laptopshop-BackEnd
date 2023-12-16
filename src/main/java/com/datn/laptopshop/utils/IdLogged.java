@@ -8,10 +8,10 @@ public class IdLogged {
 
     public static String getUser(){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String id=null;
+        String username=null;
         if (principal instanceof User){
-            id = ((User) principal).getUsername();
+            username = ((User) principal).getUsername();
         }
-        return id;
+        return username;
     }
 }

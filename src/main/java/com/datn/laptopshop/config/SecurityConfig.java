@@ -58,8 +58,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/login","/api/register","/api/cart/**",
                         "/api/store/**","/api/search/**","/api/news","/api/news/**",
                         "/api/register/**","/api/getAllProduct","/api/checkout/vnpay").permitAll()
-//                        .requestMatchers("/api/register").hasRole("ADMIN")
-                        .requestMatchers("").hasAnyRole("ADMIN","USER")
+                        .requestMatchers("/api/user/**","/api/purchase-history","/api/order").hasAnyRole("ADMIN","USER")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                         .and()
                         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

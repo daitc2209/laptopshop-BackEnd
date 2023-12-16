@@ -7,6 +7,7 @@ import com.datn.laptopshop.service.ICategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @RestController("")
 @RequestMapping("/api/admin/category")
+@PreAuthorize("hasRole('ADMIN')")
 public class CategoryAdminController {
     @Autowired
     private ICategoryService categoryService;
@@ -102,7 +104,7 @@ public class CategoryAdminController {
                         HttpStatus.OK,"",0);
             }
             return ResponseHandler.responseBuilder("err","Delete Failed !!!!!",
-                    HttpStatus.BAD_REQUEST,"",99);
+                    HttpStatus.OK,"",99);
         }
         catch (Exception e){
             return ResponseHandler.responseBuilder("err",e.getMessage(),

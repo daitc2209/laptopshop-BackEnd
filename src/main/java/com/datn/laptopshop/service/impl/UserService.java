@@ -66,6 +66,8 @@ public class UserService implements IUserService, UserDetailsService {
                 m.put("accessToken", jwtToken);
                 m.put("refreshToken", refreshToken);
                 m.put("role", user.get().getRole().getName());
+                m.put("img", user.get().getImg());
+                m.put("name", user.get().getFullname());
                 revokeAllUserTokens(user.get());
                 saveUserToken(user.get(), jwtToken);
                 return ResponseHandler.responseBuilder("success",
@@ -379,9 +381,9 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean lock(long id) {
+    public boolean lock(long id, String username) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty())
+        if (user.isEmpty() || user.get().getUsername().equals(username))
             return false;
 
         // If saving modification fail, return false

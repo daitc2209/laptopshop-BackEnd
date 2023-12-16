@@ -5,6 +5,7 @@ import com.datn.laptopshop.dto.CategoryDto;
 import com.datn.laptopshop.entity.Brand;
 import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.repos.BrandRepository;
+import com.datn.laptopshop.repos.ProductRepository;
 import com.datn.laptopshop.service.IBrandService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class BrandService implements IBrandService {
 
     @Autowired
     private BrandRepository brandRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     @Override
     public List<BrandDto> findAll() {
@@ -126,7 +130,12 @@ public class BrandService implements IBrandService {
     public boolean delete(long id) {
         // If the data does not exist, throw exception
         if (!brandRepository.existsById(id)) {
-            System.out.println("The data does not exist!");return false;
+            System.out.println("The brand does not exist!");return false;
+        }
+
+        if (productRepository.existsByBrand(id)) {
+            System.out.println("The brand exist in Product");
+            return false;
         }
 
         // Clear data based on input

@@ -43,7 +43,7 @@ public interface IUserService {
 
     boolean insert(AddUserRequest addUserRequest);
 
-    boolean lock(long id);
+    boolean lock(long id, String username);
 
     boolean unlock(long id);
 }

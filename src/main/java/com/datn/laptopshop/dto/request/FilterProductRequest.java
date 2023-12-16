@@ -13,7 +13,8 @@ public class FilterProductRequest {
     private String sort;
     private String cateogryName;
     private String brandName;
-    private String price;
+    private long minPrice;
+    private long maxPrice;
 
     @Override
     public String toString() {
@@ -21,7 +22,8 @@ public class FilterProductRequest {
                 "sort='" + sort + '\'' +
                 ", cateogryName='" + cateogryName + '\'' +
                 ", brandName='" + brandName + '\'' +
-                ", price='" + price + '\'' +
+                ", minPrice='" + minPrice + '\'' +
+                ", maxPrice='" + maxPrice + '\'' +
                 '}';
     }
 }

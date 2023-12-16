@@ -2,23 +2,17 @@ package com.datn.laptopshop.controller.Admin;
 
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.ProductDto;
-import com.datn.laptopshop.dto.UserDto;
-import com.datn.laptopshop.dto.request.AddUserRequest;
-import com.datn.laptopshop.dto.request.EditUserRequest;
 import com.datn.laptopshop.dto.request.SearchProductRequest;
-import com.datn.laptopshop.dto.request.SearchUserRequest;
-import com.datn.laptopshop.enums.AuthenticationType;
-import com.datn.laptopshop.enums.StateUser;
 import com.datn.laptopshop.service.IBrandService;
 import com.datn.laptopshop.service.ICategoryService;
 import com.datn.laptopshop.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.util.HashMap;
@@ -28,15 +22,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/product")
+@PreAuthorize("hasRole('ADMIN')")
 public class ProductAdminController {
     @Autowired
     private IProductService productService;
-
-    @Autowired
-    private ICategoryService categoryService;
-
-    @Autowired
-    private IBrandService brandService;
 
     private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\product\\";
 

@@ -35,4 +35,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             " and o.stateCheckout = 1 GROUP BY p.id, p.name, p.img ,p.brand, p.category")
     List<Object[]> getOrderRevenueByProduct();
 
+    @Query("select count(o) > 0 from OrderDetail o where o.product.id = ?1")
+    boolean existsByProduct(long id);
+
 }

@@ -12,6 +12,7 @@ import com.datn.laptopshop.entity.Product;
 import com.datn.laptopshop.entity.User;
 import com.datn.laptopshop.repos.BrandRepository;
 import com.datn.laptopshop.repos.CategoryRepository;
+import com.datn.laptopshop.repos.OrderDetailRepository;
 import com.datn.laptopshop.repos.ProductRepository;
 import com.datn.laptopshop.service.IProductService;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,9 @@ public class ProductService implements IProductService {
     @Autowired
     BrandRepository brandRepository;
 
+    @Autowired
+    OrderDetailRepository OrderDetailRepository;
+
     @Override
     public List<ProductDto> findByCategoryId(long id) {
 
@@ -56,7 +60,7 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductDto> findAll(FilterProductRequest filterProduct, int page, int limit) {
         double minPrice = 0;
-        double maxPrice = 100000000;
+        double maxPrice = 50000000;
         Sort sort = Sort.by(Sort.Direction.ASC, "price");
 //        System.out.println("FilterProduct 1: "+filterProduct.toString());
         if (filterProduct.getBrandName().equals("all"))
@@ -69,21 +73,8 @@ public class ProductService implements IProductService {
             sort = Sort.by(Sort.Direction.ASC, "name");
         if (filterProduct.getSort().equals("z-a"))
             sort = Sort.by(Sort.Direction.DESC, "name");
-        if (filterProduct.getPrice().equals("1-5"))
-        {
-            minPrice = 1000000;
-            maxPrice = 5000000;
-        }
-        if (filterProduct.getPrice().equals("5-10"))
-        {
-            minPrice = 5000000;
-            maxPrice = 10000000;
-        }
-        if (filterProduct.getPrice().equals("10-100"))
-        {
-            minPrice = 10000000;
-            maxPrice = 100000000;
-        }
+        minPrice = filterProduct.getMinPrice();
+        maxPrice = filterProduct.getMaxPrice();
 
         Pageable pageable = PageRequest.of(page - 1, limit, sort);
 
@@ -233,6 +224,11 @@ public class ProductService implements IProductService {
         // If the data does not exist, throw exception
         if (!productRepository.existsById(id)) {
             System.out.println("product not exist!!");
+            return false;
+        }
+        Optional<Product> p = productRepository.findById(id);
+        if (OrderDetailRepository.existsByProduct(id)){
+            System.out.println("product exist in OrderDetail !!!!");
             return false;
         }
 
