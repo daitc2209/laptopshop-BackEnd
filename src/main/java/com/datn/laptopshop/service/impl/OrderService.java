@@ -3,7 +3,6 @@ package com.datn.laptopshop.service.impl;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.*;
 import com.datn.laptopshop.dto.request.InforOrder;
-import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.Order;
 import com.datn.laptopshop.entity.OrderDetail;
 import com.datn.laptopshop.enums.StateCheckout;
@@ -118,12 +117,11 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public List<OrderDto> findbyUser(String email) {
+    public List<OrderDto> findByOrderByStatus(String email, StateOrder status) {
+        System.out.println("status: "+status);
 
-        List<Order> listOrder = orderRepository.findByUser(email);
+        List<Order> listOrder = orderRepository.findByOrderByStatus(email, status);
         if (listOrder.isEmpty()){
-            listOrder = orderRepository.findByUsername(email);
-            if (listOrder.isEmpty())
                 return null;
         }
 
@@ -143,6 +141,33 @@ public class OrderService implements IOrderService {
             listOrderDto.add(orderDto);
         }
 
+        return listOrderDto;
+    }
+
+    @Override
+    public List<OrderDto> findOrderByRangeDay(String email, Date start, Date end, StateOrder status) {
+
+        List<Order> listOrder = orderRepository.findOrderByRangeDay(email, start, end, status);
+
+        if (listOrder.isEmpty()){
+            return null;
+        }
+
+        List<OrderDto> listOrderDto = new ArrayList<>();
+        for (Order o : listOrder){
+            OrderDto orderDto = new OrderDto().toOrderDto(o);
+            List<OrderDetail> listOrderDetail = o.getOrderdetail();
+            List<OrderDetailDto> listOrderDetailDto = new ArrayList<>();
+            for (OrderDetail oEntity : listOrderDetail){
+                OrderDetailDto oDto = new OrderDetailDto().toOrderDetailDto(oEntity);
+                oDto.setProduct(new ProductDto().toProductDTO(oEntity.getProduct()));
+                listOrderDetailDto.add(oDto);
+            }
+
+            orderDto.setOrderdetail(listOrderDetailDto);
+
+            listOrderDto.add(orderDto);
+        }
 
         return listOrderDto;
     }
@@ -181,8 +206,6 @@ public class OrderService implements IOrderService {
             return orderDto;
         });
 
-        System.out.println("page data: "+ pageNewsDto.toString());
-
         return pageNewsDto;
     }
 
@@ -196,9 +219,7 @@ public class OrderService implements IOrderService {
 
         // If saving modification fail, return false
         if (status == StateOrder.RECEIVED)
-        {
             order.get().setStateCheckout(StateCheckout.PAID);
-        }
 
         order.get().setStateOrder(status);
         if (orderRepository.save(order.get()) == null) {

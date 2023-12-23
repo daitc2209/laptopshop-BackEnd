@@ -29,19 +29,19 @@ public class User implements UserDetails{
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", length = 50,unique = true)
     private String username;
 
     @Column(name = "hash_pw")
     private String hash_pw;
 
-    @Column(name = "fullname")
+    @Column(name = "fullname", length = 50)
     private String fullname;
 
-    @Column(name = "email")
+    @Column(name = "email", length = 50, unique = true)
     private String email;
 
-    @Column(name = "gender")
+    @Column(name = "gender", length = 12)
     private String gender;
 
     @Column(name = "dob")
@@ -53,7 +53,7 @@ public class User implements UserDetails{
     @Column(name = "img")
     private String img;
 
-    @Column(name = "phone")
+    @Column(name = "phone", length = 11)
     private String phone;
 
     @Column(name = "register_token")
@@ -75,20 +75,20 @@ public class User implements UserDetails{
     private Date update_at;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "stateUser")
+    @Column(name = "stateUser", length = 20)
     private StateUser stateUser;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "auth_type")
+    @Column(name = "auth_type", length = 20)
     private AuthenticationType authType;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Comment> comments;
+//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore

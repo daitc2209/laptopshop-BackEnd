@@ -46,4 +46,6 @@ public interface IUserService {
     boolean lock(long id, String username);
 
     boolean unlock(long id);
+
+    boolean delete(long id, String username);
 }

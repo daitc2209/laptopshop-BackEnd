@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +75,32 @@ public class RevenueController {
 
             m.put("revenueProduct", revenueProduct);
             return ResponseHandler.responseBuilder("Success","get revenue products successfully !!!",
+                    HttpStatus.OK,m,0);
+        }
+        catch (Exception e){
+            return ResponseHandler.responseBuilder("Error",e.getMessage(),
+                    HttpStatus.BAD_REQUEST,"",99);
+        }
+    }
+
+    @PostMapping("/range-day")
+    public ResponseEntity<?> getRevenueFromRangeDay(@RequestBody Map<String, String> data ){
+        try{
+            String start = data.get("start");
+            String end = data.get("end");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            Date startDate = dateFormat.parse(start);
+            Date endDate = dateFormat.parse(end);
+
+            if (endDate.before(startDate))
+                return ResponseHandler.responseBuilder("Error","startDate is greater than endDate !!!",
+                        HttpStatus.BAD_REQUEST,"",99);
+
+            Map m = new HashMap<>();
+            var revenueDay = revenueService.revenueRangeDay(startDate, endDate);
+
+            m.put("revenueDay", revenueDay);
+            return ResponseHandler.responseBuilder("Success","get revenue Day successfully !!!",
                     HttpStatus.OK,m,0);
         }
         catch (Exception e){

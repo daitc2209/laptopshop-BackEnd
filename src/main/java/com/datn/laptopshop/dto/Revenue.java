@@ -14,5 +14,7 @@ import java.util.Date;
 public class Revenue {
     private int year;
     private int month;
+    private int day;
     private long total_money_month;
+    private long total_money_day;
 }

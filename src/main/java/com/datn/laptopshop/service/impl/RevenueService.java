@@ -106,5 +106,22 @@ public class RevenueService implements IRevenueService {
         return revenueProductList;
     }
 
+    @Override
+    public List<Revenue> revenueRangeDay(Date start, Date end) {
+        List<Object[]> list = orderDetailRepository.getOrderRevenueByRangeDay(start, end);
+
+        List<Revenue> revenueList = new ArrayList<>();
+        for (Object[] obj : list ){
+            Revenue r = new Revenue();
+            r.setYear((int) obj[0]);
+            r.setMonth((int) obj[1]);
+            r.setDay((int) obj[2]);
+            r.setTotal_money_day((long) obj[3]);
+            revenueList.add(r);
+        }
+
+        return revenueList;
+    }
+
 
 }

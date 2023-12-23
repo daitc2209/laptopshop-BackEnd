@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -34,6 +35,11 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "where o.id = od.order.id and od.product.id = p.id" +
             " and o.stateCheckout = 1 GROUP BY p.id, p.name, p.img ,p.brand, p.category")
     List<Object[]> getOrderRevenueByProduct();
+
+    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, DAY(o.created_at) as day, SUM(o.total_money) AS revenue " +
+            "FROM Order o WHERE o.stateCheckout = 1 AND o.created_at BETWEEN ?1 AND ?2 " +
+            "GROUP BY YEAR(o.created_at), MONTH(o.created_at), DAY(o.created_at)")
+    List<Object[]> getOrderRevenueByRangeDay(Date start, Date end);
 
     @Query("select count(o) > 0 from OrderDetail o where o.product.id = ?1")
     boolean existsByProduct(long id);

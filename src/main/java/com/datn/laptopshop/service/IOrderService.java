@@ -9,6 +9,7 @@ import com.datn.laptopshop.enums.StateOrder;
 import org.springframework.data.domain.Page;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public interface IOrderService {
@@ -20,12 +21,15 @@ public interface IOrderService {
 
     OrderDto findById(long id);
 
-    List<OrderDto> findbyUser(String email);
+    List<OrderDto> findByOrderByStatus(String email,StateOrder status);
 
     boolean cancelOrder(long id);
 
     Page<OrderDto> findAll(int page, int limit, String name, String payment, StateOrder stateOrder);
 
     boolean updateStateOrder(long id,StateOrder status);
+
+    List<OrderDto> findOrderByRangeDay(String email, Date start, Date end, StateOrder status);
+
 
 }

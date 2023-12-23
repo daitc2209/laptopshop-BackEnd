@@ -4,10 +4,10 @@ import com.datn.laptopshop.dto.Revenue;
 import com.datn.laptopshop.dto.RevenueCategories;
 import com.datn.laptopshop.dto.RevenueProduct;
 
+import java.util.Date;
 import java.util.List;
 
 public interface IRevenueService {
-    //    List<Revenue> revenue(int page, int limit, StateCheckout stateCheckout, StateOrder stateOrder, String payment, Date start, Date end);
     List<RevenueCategories> revenueWithCategories();
 
     List<Revenue> revenue();
@@ -15,4 +15,6 @@ public interface IRevenueService {
     List<Revenue> revenueYear(String year);
 
     List<RevenueProduct> revenueProduct();
+
+    List<Revenue> revenueRangeDay(Date start, Date end);
 }

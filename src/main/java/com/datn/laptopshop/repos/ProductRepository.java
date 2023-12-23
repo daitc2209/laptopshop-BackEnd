@@ -38,7 +38,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 Double maxPrice,
                                 Pageable pageable
                                 );
-
     @Query("SELECT p FROM Product p where concat(p.name, p.brand.name, p.category.name) like %?1% ")
     List<Product> findByNameStartsWith(String term);
 

@@ -3,6 +3,7 @@ package com.datn.laptopshop.controller;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.OrderDto;
 import com.datn.laptopshop.entity.Order;
+import com.datn.laptopshop.enums.StateOrder;
 import com.datn.laptopshop.service.IOrderService;
 import com.datn.laptopshop.utils.IdLogged;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,28 +12,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/purchase-history")
 public class PurchaseHistoryController {
 
     @Autowired
     private IOrderService orderService;
 
-    @GetMapping("/purchase-history")
-    public ResponseEntity<Object> historyPage() {
+    @GetMapping
+    public ResponseEntity<Object> historyPage(@RequestParam(value = "status", defaultValue = "") String status) {
         try {
             Map m = new HashMap<>();
-
-            List<OrderDto> order = orderService.findbyUser(IdLogged.getUser());
-            System.out.println("IdLogged.getUser(): "+IdLogged.getUser());
-//            if (order.isEmpty())
-//                return ResponseHandler.responseBuilder("Error","Khong tim thay !!!",
-//                        HttpStatus.BAD_REQUEST,"",99);
+            StateOrder stateOrder;
+            try{
+                stateOrder = StateOrder.valueOf(status.toUpperCase());
+            }
+            catch (IllegalArgumentException e)
+            {
+                stateOrder = null;
+            }
+            List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(),stateOrder);
             m.put("order",order);
             return ResponseHandler.responseBuilder("Message","get Success",
                     HttpStatus.OK,m,0);
@@ -43,15 +45,73 @@ public class PurchaseHistoryController {
         }
     }
 
-    @PostMapping("/purchase-history/delete")
-    public ResponseEntity<Object> cancelOrder(@RequestParam("id") long id){
-
+    @PostMapping("/delete")
+    public ResponseEntity<Object> cancelOrder(@RequestParam("id") long id, @RequestParam("status") StateOrder status){
+        Map m = new HashMap<>();
         boolean cancel = orderService.cancelOrder(id);
+        List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), status);
+        m.put("order",order);
+
         if (cancel)
-            return ResponseHandler.responseBuilder("Message","get Success",
-                    HttpStatus.OK,orderService.findById(id).getStateOrder(),0);
+            return ResponseHandler.responseBuilder("Message","Cancel Success",
+                    HttpStatus.OK,m,0);
 
         return ResponseHandler.responseBuilder("Error","Bo qua that bai !!!",
                 HttpStatus.BAD_REQUEST,"",99);
+    }
+
+    @PostMapping("/range-day")
+    public ResponseEntity<?> getOrderByRangeDay(@RequestBody Map<String, String> data ){
+        try{
+            String start = data.get("start");
+            String end = data.get("end");
+            String status = data.get("status");
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+            Date startDate = dateFormat.parse(start);
+            Date endDate = dateFormat.parse(end);
+
+            if (endDate.before(startDate))
+                return ResponseHandler.responseBuilder("Error","startDate is greater than endDate !!!",
+                        HttpStatus.BAD_REQUEST,"",99);
+
+            StateOrder stateOrder;
+            try{
+                stateOrder = StateOrder.valueOf(status.toUpperCase());
+            }
+            catch (IllegalArgumentException e)
+            {
+                stateOrder = null;
+            }
+
+            Map m = new HashMap<>();
+            var order = orderService.findOrderByRangeDay(IdLogged.getUser(),startDate, endDate, stateOrder);
+
+            m.put("orderDay", order);
+            return ResponseHandler.responseBuilder("Success","get revenue Day successfully !!!",
+                    HttpStatus.OK,m,0);
+        }
+        catch (Exception e){
+            return ResponseHandler.responseBuilder("Error",e.getMessage(),
+                    HttpStatus.BAD_REQUEST,"",99);
+        }
+    }
+
+    @GetMapping("/totalOrder")
+    public ResponseEntity<?> getTotalOrderReceived(){
+        int total_money=0;
+        int total_order=0;
+        Map m = new HashMap<>();
+        List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.RECEIVED);
+        if (!order.isEmpty()) {
+            for (OrderDto o : order) {
+                total_money += o.getTotal_money();
+            }
+            total_order = order.size();
+        }
+        m.put("total_order",total_order);
+        m.put("total_money",total_money);
+        return ResponseHandler.responseBuilder("Message","Cancel Success",
+                HttpStatus.OK,m,0);
     }
 }

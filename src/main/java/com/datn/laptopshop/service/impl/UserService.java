@@ -412,6 +412,18 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
+    public boolean delete(long id, String username) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty() || user.get().getUsername().equals(username))
+            return false;
+
+        // If saving modification fail, return false
+        userRepository.delete(user.get());
+
+        return true;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 //        User user = userRepository.findUserByEmail(email)
 //                .orElseThrow(() -> new UsernameNotFoundException(email + " not found"));

@@ -105,7 +105,6 @@ public class UserAdminController {
             edit.setAuthType(authType);
             edit.setRole(role);
             edit.setPhone(phone);
-            System.out.println("edit: "+edit.toString());
             String nameImage = "";
 
             UserDto u = userService.findbyId(edit.getId());
@@ -121,12 +120,9 @@ public class UserAdminController {
                     fileImage.transferTo(new File(filePath));
 
                     edit.setImg(nameImage);
-                    System.out.println("1");
 
                 }
-                System.out.println("2");
                 boolean res = userService.update(edit);
-                System.out.println("15");
 
                 if (res)
                     return ResponseHandler.responseBuilder("success", "post edit user successfully", HttpStatus.OK,"",0);
@@ -159,6 +155,19 @@ public class UserAdminController {
                 return ResponseHandler.responseBuilder("success", "Unlock user successfully!\"", HttpStatus.OK,"",0);
             }
             return ResponseHandler.responseBuilder("error", "Unlock user failed!", HttpStatus.OK,"",0);
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
+        }
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestParam("id") long id){
+        try {
+            boolean res = userService.delete(id, IdLogged.getUser());
+            if (res){
+                return ResponseHandler.responseBuilder("success", "Delete user successfully!\"", HttpStatus.OK,"",0);
+            }
+            return ResponseHandler.responseBuilder("error", "Delete user failed!", HttpStatus.OK,"",0);
         }catch (Exception e){
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
         }

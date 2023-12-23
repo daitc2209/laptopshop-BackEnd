@@ -27,7 +27,7 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column(name = "name", length = 550, unique = true)
+    @Column(name = "name", length = 300, unique = true)
     private String name;
 
     @Column(name = "price")
@@ -42,7 +42,7 @@ public class Product {
     @Column(name = "img", length = 500)
     private String img;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
