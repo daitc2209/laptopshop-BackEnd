@@ -28,10 +28,6 @@ public class EditUserRequest {
 
     private StateUser stateUser;
 
-    private AuthenticationType authType;
-
-    private Long role;
-
     private String img;
 
     private String phone;
@@ -60,8 +56,6 @@ public class EditUserRequest {
                 ", birthday='" + birthday + '\'' +
                 ", address='" + address + '\'' +
                 ", stateUser=" + stateUser +
-                ", authType=" + authType +
-                ", role=" + role +
                 ", img='" + img + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';

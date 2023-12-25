@@ -118,11 +118,35 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderDto> findByOrderByStatus(String email, StateOrder status) {
-        System.out.println("status: "+status);
-
         List<Order> listOrder = orderRepository.findByOrderByStatus(email, status);
         if (listOrder.isEmpty()){
                 return null;
+        }
+
+        List<OrderDto> listOrderDto = new ArrayList<>();
+        for (Order o : listOrder){
+            OrderDto orderDto = new OrderDto().toOrderDto(o);
+            List<OrderDetail> listOrderDetail = o.getOrderdetail();
+            List<OrderDetailDto> listOrderDetailDto = new ArrayList<>();
+            for (OrderDetail oEntity : listOrderDetail){
+                OrderDetailDto oDto = new OrderDetailDto().toOrderDetailDto(oEntity);
+                oDto.setProduct(new ProductDto().toProductDTO(oEntity.getProduct()));
+                listOrderDetailDto.add(oDto);
+            }
+
+            orderDto.setOrderdetail(listOrderDetailDto);
+
+            listOrderDto.add(orderDto);
+        }
+
+        return listOrderDto;
+    }
+
+    @Override
+    public List<OrderDto> findByOrderByStatus(StateOrder status) {
+        List<Order> listOrder = orderRepository.findByOrderByStatus(status);
+        if (listOrder.isEmpty()){
+            return null;
         }
 
         List<OrderDto> listOrderDto = new ArrayList<>();
@@ -184,10 +208,10 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Page<OrderDto> findAll(int page, int limit,  String name, String payment, StateOrder stateOrder) {
+    public Page<OrderDto> findAll(int page, int limit, String search_text, StateOrder status) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable p = PageRequest.of(page - 1,limit, sort);
-        Page<Order> pageNews = orderRepository.findAll(name,payment,stateOrder,p);
+        Page<Order> pageNews = orderRepository.findAll(search_text,status,p);
 
         if (pageNews.isEmpty())
             return null;
@@ -198,6 +222,32 @@ public class OrderService implements IOrderService {
             List<OrderDetailDto> listOrderDetailDto = new ArrayList<>();
             for (OrderDetail o: listOrderDetailEntity
                  ) {
+                OrderDetailDto oDto = new OrderDetailDto().toOrderDetailDto(o);
+                oDto.setProduct(new ProductDto().toProductDTO(o.getProduct()));
+                listOrderDetailDto.add(oDto);
+            }
+            orderDto.setOrderdetail(listOrderDetailDto);
+            return orderDto;
+        });
+
+        return pageNewsDto;
+    }
+
+    @Override
+    public Page<OrderDto> findOrderByRangeDay(int page, int limit, String search_text, Date start, Date end, StateOrder status) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable p = PageRequest.of(page - 1,limit, sort);
+        Page<Order> pageNews = orderRepository.findOrderByRangeDayAdmin(search_text, start, end,status,p);
+
+        if (pageNews.isEmpty())
+            return null;
+
+        Page<OrderDto> pageNewsDto =pageNews.map(n -> {
+            OrderDto orderDto = new OrderDto().toOrderDto(n);
+            List<OrderDetail> listOrderDetailEntity = n.getOrderdetail();
+            List<OrderDetailDto> listOrderDetailDto = new ArrayList<>();
+            for (OrderDetail o: listOrderDetailEntity
+            ) {
                 OrderDetailDto oDto = new OrderDetailDto().toOrderDetailDto(o);
                 oDto.setProduct(new ProductDto().toProductDTO(o.getProduct()));
                 listOrderDetailDto.add(oDto);

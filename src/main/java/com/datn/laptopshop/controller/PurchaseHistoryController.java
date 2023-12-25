@@ -66,14 +66,19 @@ public class PurchaseHistoryController {
             String start = data.get("start");
             String end = data.get("end");
             String status = data.get("status");
+            Date startDate = null;
+            Date endDate = null;
+            // Kiem tra xem khoang ngay co bi null hay khong
+            if (start != null || end != null) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                startDate = dateFormat.parse(start);
+                endDate = dateFormat.parse(end);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-            Date startDate = dateFormat.parse(start);
-            Date endDate = dateFormat.parse(end);
-
-            if (endDate.before(startDate))
-                return ResponseHandler.responseBuilder("Error","startDate is greater than endDate !!!",
-                        HttpStatus.BAD_REQUEST,"",99);
+                //Kiem tra xem ngay ket thuc co nho hon ngay bat dau hay khong
+                if (endDate.before(startDate))
+                    return ResponseHandler.responseBuilder("Error","startDate is greater than endDate !!!",
+                            HttpStatus.BAD_REQUEST,"",99);
+            }
 
             StateOrder stateOrder;
             try{
@@ -100,18 +105,16 @@ public class PurchaseHistoryController {
     @GetMapping("/totalOrder")
     public ResponseEntity<?> getTotalOrderReceived(){
         int total_money=0;
-        int total_order=0;
         Map m = new HashMap<>();
         List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.RECEIVED);
         if (!order.isEmpty()) {
             for (OrderDto o : order) {
                 total_money += o.getTotal_money();
             }
-            total_order = order.size();
         }
-        m.put("total_order",total_order);
+        m.put("total_order",order.size());
         m.put("total_money",total_money);
-        return ResponseHandler.responseBuilder("Message","Cancel Success",
+        return ResponseHandler.responseBuilder("Message","Get total order of user Success",
                 HttpStatus.OK,m,0);
     }
 }

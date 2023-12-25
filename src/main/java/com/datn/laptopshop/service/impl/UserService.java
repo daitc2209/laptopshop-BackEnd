@@ -178,23 +178,15 @@ public class UserService implements IUserService, UserDetailsService {
         }
         refreshToken = authHeader.substring(7);
         username = jwtService.extractUsername(refreshToken);
-        System.out.println("da vao refresh 1 !! userEmail: "+ username);
         if(username != null){
-            System.out.println("da vao refresh 2");
             var user = userRepository.findUserByUsername(username).orElseThrow();
-            System.out.println("user: "+user);
             if(jwtService.isTokenValid(refreshToken, user)){
-                System.out.println("da vao refresh 3");
                 var accessToken = jwtService.generateToken(user);
-                System.out.println("da vao refresh 4");
                 revokeAllUserTokens(user);
-                System.out.println("da vao refresh 5");
                 saveUserToken(user, accessToken);
-                System.out.println("da vao refresh 6");
                 Map m = new HashMap<>();
                 m.put("accessToken", jwtService.generateToken(user));
                 m.put("refreshToken", jwtService.generateRefreshToken(user));
-                System.out.println("refresh Token *****");
                 new ObjectMapper().writeValue(response.getOutputStream(), m);
             }
         }
@@ -293,12 +285,6 @@ public class UserService implements IUserService, UserDetailsService {
                 u.get().setPhone(edit.getPhone());
             if (edit.getStateUser() != null)
                 u.get().setStateUser(edit.getStateUser());
-            if (edit.getAuthType() != null)
-                u.get().setAuthType(edit.getAuthType());
-            var r = roleRepository.findById(edit.getRole());
-            if (r.isPresent()){
-                u.get().setRole(r.get());
-            }
 
             u.get().setUpdate_at(new Date());
 
@@ -425,8 +411,6 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        User user = userRepository.findUserByEmail(email)
-//                .orElseThrow(() -> new UsernameNotFoundException(email + " not found"));
         User user = userRepository.findUserByEmail(email)
                 .orElseGet(() -> userRepository.findUserByUsername(email)
                         .orElseThrow(() -> new UsernameNotFoundException(email + " not found")));

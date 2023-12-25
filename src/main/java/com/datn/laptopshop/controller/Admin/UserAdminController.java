@@ -39,10 +39,9 @@ public class UserAdminController {
             @RequestParam(name = "email", defaultValue = "") String email,
             @RequestParam(name = "stateUser", defaultValue = "") StateUser stateUser,
             @RequestParam(name = "authType", defaultValue = "") AuthenticationType authType,
-            @RequestParam(name = "role", defaultValue = "0") Long role,
             @RequestParam(name = "page", defaultValue = "1") int page){
         try{
-            SearchUserRequest search = new SearchUserRequest(fullname,sex,address,email,stateUser,authType,role);
+            SearchUserRequest search = new SearchUserRequest(fullname,sex,address,email,stateUser,2,authType);
 
             int limit = 4;
             Map m = new HashMap<>();
@@ -91,8 +90,6 @@ public class UserAdminController {
             @RequestParam(value = "sex") String sex,
             @RequestParam(value = "birthday") String birthday,
             @RequestParam(value = "stateUser") StateUser stateUser,
-            @RequestParam(value = "authType") AuthenticationType authType,
-            @RequestParam(value = "role") Long role,
             @RequestParam(value = "phone") String phone){
         try{
             EditUserRequest edit = new EditUserRequest();
@@ -102,8 +99,6 @@ public class UserAdminController {
             edit.setSex(sex);
             edit.setBirthday(birthday);
             edit.setStateUser(stateUser);
-            edit.setAuthType(authType);
-            edit.setRole(role);
             edit.setPhone(phone);
             String nameImage = "";
 
@@ -169,6 +164,34 @@ public class UserAdminController {
             }
             return ResponseHandler.responseBuilder("error", "Delete user failed!", HttpStatus.OK,"",0);
         }catch (Exception e){
+            return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
+        }
+    }
+
+    @GetMapping("/getAdmin")
+    public ResponseEntity<?> getListAdmin(
+            @RequestParam(name = "fullname", defaultValue = "") String fullname,
+            @RequestParam(name = "sex", defaultValue = "") String sex,
+            @RequestParam(name = "address", defaultValue = "") String address,
+            @RequestParam(name = "email", defaultValue = "") String email,
+            @RequestParam(name = "stateUser", defaultValue = "") StateUser stateUser,
+            @RequestParam(name = "authType", defaultValue = "") AuthenticationType authType,
+            @RequestParam(name = "page", defaultValue = "1") int page){
+        try{
+            SearchUserRequest search = new SearchUserRequest(fullname,sex,address,email,stateUser,1,authType);
+
+            int limit = 4;
+            Map m = new HashMap<>();
+            var listUser = userService.findAll(page, limit,search);
+
+            m.put("listUser",listUser);
+            m.put("currentPage",page);
+
+            return ResponseHandler.responseBuilder
+                    ("success", "Get list user success", HttpStatus.OK,m,0);
+
+        }
+        catch (Exception e){
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
         }
     }

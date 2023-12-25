@@ -17,8 +17,8 @@ public class SearchUserRequest {
     private String address;
     private String email;
     private StateUser stateUser;
+    private long role;
     private AuthenticationType authType;
-    private Long role;
 
     @Override
     public String toString() {
@@ -29,7 +29,6 @@ public class SearchUserRequest {
                 ", email='" + email + '\'' +
                 ", stateUser=" + stateUser +
                 ", authType=" + authType +
-                ", role=" + role +
                 '}';
     }
 }

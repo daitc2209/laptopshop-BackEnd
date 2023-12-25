@@ -1,7 +1,11 @@
 package com.datn.laptopshop.controller.Admin;
 
 import com.datn.laptopshop.config.ResponseHandler;
+import com.datn.laptopshop.dto.request.SearchUserRequest;
+import com.datn.laptopshop.enums.StateOrder;
+import com.datn.laptopshop.service.IOrderService;
 import com.datn.laptopshop.service.IRevenueService;
+import com.datn.laptopshop.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,12 @@ public class RevenueController {
 
     @Autowired
     private IRevenueService revenueService;
+
+    @Autowired
+    private IUserService userService;
+
+    @Autowired
+    private IOrderService orderService;
 
     @GetMapping("/categories")
     public ResponseEntity<?> getRevenueWithCategories() {
@@ -107,5 +117,19 @@ public class RevenueController {
             return ResponseHandler.responseBuilder("Error",e.getMessage(),
                     HttpStatus.BAD_REQUEST,"",99);
         }
+    }
+
+    @GetMapping("/card")
+    public  ResponseEntity<?> getUserAndOrder(){
+        Map m = new HashMap<>();
+        SearchUserRequest search = new SearchUserRequest();
+        search.setRole(2);
+        var numUser = userService.findAll(1, 2,search);
+        var numOrder = orderService.findByOrderByStatus(StateOrder.PENDING);
+        m.put("numUser",numUser.getSize());
+        m.put("numOrder",numOrder.size());
+
+        return ResponseHandler.responseBuilder
+                ("success", "Get list user success", HttpStatus.OK,m,0);
     }
 }

@@ -23,9 +23,13 @@ public interface IOrderService {
 
     List<OrderDto> findByOrderByStatus(String email,StateOrder status);
 
+    List<OrderDto> findByOrderByStatus(StateOrder status);
+
     boolean cancelOrder(long id);
 
-    Page<OrderDto> findAll(int page, int limit, String name, String payment, StateOrder stateOrder);
+    Page<OrderDto> findAll(int page, int limit, String search_text, StateOrder status);
+
+    Page<OrderDto> findOrderByRangeDay(int page, int limit, String search_text, Date start, Date end, StateOrder status);
 
     boolean updateStateOrder(long id,StateOrder status);
 
