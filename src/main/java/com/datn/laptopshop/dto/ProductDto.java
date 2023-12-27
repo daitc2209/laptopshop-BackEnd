@@ -1,6 +1,7 @@
 package com.datn.laptopshop.dto;
 
 import com.datn.laptopshop.entity.Product;
+import com.datn.laptopshop.enums.StateProduct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class ProductDto {
     private int quantity;
     private String img;
     private String description;
+    private StateProduct state;
 
     public ProductDto toProductDTO(Product product) {
         return new ProductDto(product.getId(),
@@ -32,7 +34,8 @@ public class ProductDto {
                 product.getDiscount(),
                 product.getQuantity(),
                 product.getImg(),
-                product.getDescription());
+                product.getDescription(),
+                product.getStateProduct());
     }
 
     public boolean isEmpty()  {
@@ -61,6 +64,7 @@ public class ProductDto {
                 ", quantity=" + quantity +
                 ", img='" + img + '\'' +
                 ", description='" + description + '\'' +
+                ", state='" + state + '\'' +
                 '}';
     }
 }

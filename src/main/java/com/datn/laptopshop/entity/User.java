@@ -86,9 +86,9 @@ public class User implements UserDetails{
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    private List<Comment> comments;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Favourite> favourites;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore

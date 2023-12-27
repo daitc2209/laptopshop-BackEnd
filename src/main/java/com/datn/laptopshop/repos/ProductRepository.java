@@ -15,18 +15,12 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    @Query("select p from Product p where p.category.id = ?1")
+    @Query("select p from Product p where p.category.id = ?1 and p.stateProduct = 1")
     List<Product> findAllProductWithCategoryId(Long id);
-
-//    @Query("SELECT p\n" +
-//            "FROM Product p, Brand b, Category c \n" +
-//            "WHERE p.brand.id = b.id AND p.category.id = c.id\n" +
-//            "AND c.name LIKE %?1% AND b.name LIKE %?2% order by p.name asc")
-//    List<Product> filterProduct(String brand, String category,int page, int limit);
 
     @Query("SELECT p\n" +
             "FROM Product p, Brand b, Category c \n" +
-            "WHERE p.brand.id = b.id AND p.category.id = c.id\n" +
+            "WHERE p.brand.id = b.id AND p.category.id = c.id and p.stateProduct = 1 \n" +
             "AND (?1 IS NULL OR ?1 = '' OR b.name LIKE %?1%)\n" +
             "AND (?2 IS NULL OR ?2 = '' OR c.name LIKE %?2%)\n" +
             "AND (?3 IS NULL OR p.price >= ?3)\n" +
@@ -38,7 +32,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                                 Double maxPrice,
                                 Pageable pageable
                                 );
-    @Query("SELECT p FROM Product p where concat(p.name, p.brand.name, p.category.name) like %?1% ")
+    @Query("SELECT p FROM Product p where p.stateProduct = 1 and concat(p.name, p.brand.name, p.category.name) like %?1% ")
     List<Product> findByNameStartsWith(String term);
 
     @Query("select p from Product p where " +

@@ -38,4 +38,30 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             " and (?2 is null or ?3 is null or o.created_at BETWEEN ?2 AND ?3)" +
             " and (?4 is null or o.stateOrder = ?4)")
     List<Order> findOrderByRangeDay(String email, Date start, Date end, StateOrder status);
+
+    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, SUM(o.total_money) AS revenue " +
+            "FROM Order o WHERE o.stateCheckout = 1" +
+            " GROUP BY YEAR(o.created_at), MONTH(o.created_at)")
+    List<Object[]> getOrderRevenueByMonth();
+
+    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, SUM(o.total_money) AS revenue " +
+            "FROM Order o WHERE YEAR(o.created_at) = ?1 AND o.stateCheckout = 1" +
+            "GROUP BY YEAR(o.created_at), MONTH(o.created_at)")
+    List<Object[]> getOrderRevenueByYear(String year);
+
+    @Query("SELECT p.id, p.name, SUM(od.num) AS amount, p.img, p.brand.name, p.category.name" +
+            " FROM Order o, OrderDetail od, Product p " +
+            "where o.id = od.order.id and od.product.id = p.id" +
+            " and o.stateCheckout = 1 GROUP BY p.id, p.name, p.img ,p.brand, p.category")
+    List<Object[]> getOrderRevenueByProduct();
+
+    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, DAY(o.created_at) as day, SUM(o.total_money) AS revenue " +
+            "FROM Order o WHERE o.stateCheckout = 1 AND o.created_at BETWEEN ?1 AND ?2 " +
+            "GROUP BY YEAR(o.created_at), MONTH(o.created_at), DAY(o.created_at)")
+    List<Object[]> getOrderRevenueByRangeDay(Date start, Date end);
+
+//    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, count (o.id) AS amount " +
+//            "FROM Order o" +
+//            " GROUP BY YEAR(o.created_at), MONTH(o.created_at)")
+//    List<Object[]> getOrderByMonth();
 }

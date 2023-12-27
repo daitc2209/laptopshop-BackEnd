@@ -18,8 +18,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.username = ?1 and u.stateUser = 'ACTIVED'")
     Optional<User> findUserByUsername(String username);
 
-    @Query("select u from User u where u.email = ?1 ")
+    @Query("select u from User u where u.email = ?1")
     Optional<User> findUserByEmail(String email);
+
+    @Query("select u from User u where u.username = ?1 or u.email = ?1")
+    Optional<User> findUser(String email);
 
     @Query("select u from User u where (?1 is null or ?1 = '' or u.username = ?1)" +
             " and u.email = ?2 and u.stateUser = ?3 and u.authType = ?4")

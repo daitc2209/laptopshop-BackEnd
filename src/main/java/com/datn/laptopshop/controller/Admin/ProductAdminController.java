@@ -3,6 +3,8 @@ package com.datn.laptopshop.controller.Admin;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.ProductDto;
 import com.datn.laptopshop.dto.request.SearchProductRequest;
+import com.datn.laptopshop.enums.StateOrder;
+import com.datn.laptopshop.enums.StateProduct;
 import com.datn.laptopshop.service.IBrandService;
 import com.datn.laptopshop.service.ICategoryService;
 import com.datn.laptopshop.service.IProductService;
@@ -66,10 +68,22 @@ public class ProductAdminController {
             @RequestParam(value = "price", defaultValue = "0") int price,
             @RequestParam(value = "discount", defaultValue = "0") int discount,
             @RequestParam(value = "quantity", defaultValue = "0") int quantity,
-            @RequestParam(value = "description") String description){
+            @RequestParam(value = "description") String description,
+            @RequestParam(value = "state", defaultValue = "DISABLED") String state){
         try {
             if(discount >= 100)
                 discount = 100;
+            System.out.println("state: "+state);
+            StateProduct stateProduct;
+            try{
+                stateProduct = StateProduct.valueOf(state.toUpperCase());
+            }
+            catch (IllegalArgumentException e)
+            {
+                stateProduct = null;
+            }
+            System.out.println("state: "+state);
+            System.out.println("stateProduct: "+stateProduct);
 
             ProductDto productDto = new ProductDto();
             productDto.setName(name);
@@ -79,6 +93,7 @@ public class ProductAdminController {
             productDto.setDiscount(discount);
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
+            productDto.setState(stateProduct);
             String nameImage = "";
             if (fileImage != null && !fileImage.isEmpty()){
                 nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
@@ -116,10 +131,22 @@ public class ProductAdminController {
             @RequestParam(value = "price") int price,
             @RequestParam(value = "discount") int discount,
             @RequestParam(value = "quantity") int quantity,
-            @RequestParam(value = "description") String description){
+            @RequestParam(value = "description") String description,
+            @RequestParam(value = "state", defaultValue = "DISABLED") String state){
         try{
             if(discount >= 100)
                 discount = 100;
+            System.out.println("state edit: "+state);
+            StateProduct stateProduct;
+            try{
+                stateProduct = StateProduct.valueOf(state.toUpperCase());
+            }
+            catch (IllegalArgumentException e)
+            {
+                stateProduct = null;
+            }
+            System.out.println("state edit: "+state);
+            System.out.println("stateProduct edit: "+stateProduct);
 
             ProductDto productDto = new ProductDto();
             productDto.setId(id);
@@ -130,6 +157,7 @@ public class ProductAdminController {
             productDto.setDiscount(discount);
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
+            productDto.setState(stateProduct);
             if (fileImage != null && !fileImage.isEmpty()) {
                 String nameImage = "";
                 nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
@@ -158,6 +186,20 @@ public class ProductAdminController {
                 return ResponseHandler.responseBuilder("success", "Remove product successfully!\"", HttpStatus.OK,"",0);
             }
             return ResponseHandler.responseBuilder("error", "Remove product failed!", HttpStatus.OK,"",0);
+        }catch (Exception e){
+            return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
+        }
+    }
+
+    @PostMapping("/lock_unlock")
+    public ResponseEntity<?> lock_unlock(@RequestParam("id") long id, @RequestParam("state") int state){
+        try {
+                boolean res = productService.stateProduct(id,state);
+                if (res){
+                    return ResponseHandler.responseBuilder("success", "Unlock user successfully!\"", HttpStatus.OK,"",0);
+                }
+                return ResponseHandler.responseBuilder("error", "Unlock user failed!", HttpStatus.OK,"",0);
+
         }catch (Exception e){
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
         }

@@ -1,9 +1,11 @@
 package com.datn.laptopshop.controller.Admin;
 
 import com.datn.laptopshop.config.ResponseHandler;
+import com.datn.laptopshop.dto.request.SearchProductRequest;
 import com.datn.laptopshop.dto.request.SearchUserRequest;
 import com.datn.laptopshop.enums.StateOrder;
 import com.datn.laptopshop.service.IOrderService;
+import com.datn.laptopshop.service.IProductService;
 import com.datn.laptopshop.service.IRevenueService;
 import com.datn.laptopshop.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class RevenueController {
 
     @Autowired
     private IOrderService orderService;
+
+    @Autowired
+    private IProductService productService;
 
     @GetMapping("/categories")
     public ResponseEntity<?> getRevenueWithCategories() {
@@ -126,10 +131,29 @@ public class RevenueController {
         search.setRole(2);
         var numUser = userService.findAll(1, 2,search);
         var numOrder = orderService.findByOrderByStatus(StateOrder.PENDING);
-        m.put("numUser",numUser.getSize());
+        var totalOrder = orderService.findByOrderByStatus(null);
+        var totalProduct = productService.findAll(1,2, new SearchProductRequest("",-1,-1,0,0));
+        m.put("numUser",numUser.getTotalElements());
         m.put("numOrder",numOrder.size());
+        m.put("totalOrder",totalOrder.size());
+        m.put("totalProduct",totalProduct.getTotalElements());
 
         return ResponseHandler.responseBuilder
                 ("success", "Get list user success", HttpStatus.OK,m,0);
     }
+
+//    @GetMapping("/order-by-month")
+//    public ResponseEntity<?> getStatisticalByOrderWithMonth(){
+//        try{
+//            Map m = new HashMap<>();
+//            var revenue = revenueService.statisticalByOrderWithMonth();
+//            m.put("revenue", revenue);
+//            return ResponseHandler.responseBuilder("Success","get revenue successfully !!!",
+//                    HttpStatus.OK,m,0);
+//        }
+//        catch (Exception e){
+//            return ResponseHandler.responseBuilder("Error",e.getMessage(),
+//                    HttpStatus.BAD_REQUEST,"",99);
+//        }
+//    }
 }

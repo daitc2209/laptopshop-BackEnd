@@ -10,6 +10,8 @@ import com.datn.laptopshop.entity.Brand;
 import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.Product;
 import com.datn.laptopshop.entity.User;
+import com.datn.laptopshop.enums.StateProduct;
+import com.datn.laptopshop.enums.StateUser;
 import com.datn.laptopshop.repos.BrandRepository;
 import com.datn.laptopshop.repos.CategoryRepository;
 import com.datn.laptopshop.repos.OrderDetailRepository;
@@ -60,9 +62,8 @@ public class ProductService implements IProductService {
     @Override
     public Page<ProductDto> findAll(FilterProductRequest filterProduct, int page, int limit) {
         double minPrice = 0;
-        double maxPrice = 50000000;
+        double maxPrice = 30000000;
         Sort sort = Sort.by(Sort.Direction.ASC, "price");
-//        System.out.println("FilterProduct 1: "+filterProduct.toString());
         if (filterProduct.getBrandName().equals("all"))
             filterProduct.setBrandName("");
         if (filterProduct.getCateogryName().equals("all"))
@@ -80,9 +81,6 @@ public class ProductService implements IProductService {
 
         Page<Product> product = productRepository.filterProduct(
                 filterProduct.getBrandName(), filterProduct.getCateogryName(), minPrice, maxPrice, pageable);
-
-        System.out.println("data tu repository: "+product.getContent());
-        System.out.println("total page tu repository: "+product.getTotalPages());
 
         if(product == null)
             return null;
@@ -141,7 +139,7 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean insert(ProductDto productDto) {
-// If the input is null, throw exception
+    // If the input is null, throw exception
         if (productDto == null) {
             return false;
         }
@@ -165,6 +163,7 @@ public class ProductService implements IProductService {
         productEntity.setQuantity(productDto.getQuantity());
         productEntity.setImg(productDto.getImg());
         productEntity.setDescription(productDto.getDescription());
+        productEntity.setStateProduct(productDto.getState());
 
         Product productSave = productRepository.save(productEntity);
         if (!productRepository.existsById(productSave.getId())) {
@@ -210,6 +209,7 @@ public class ProductService implements IProductService {
             oldProductEntity.get().setImg(productDto.getImg());
         oldProductEntity.get().setQuantity(productDto.getQuantity());
         oldProductEntity.get().setDescription(productDto.getDescription());
+        oldProductEntity.get().setStateProduct(productDto.getState());
 
         Product productSave = productRepository.save(oldProductEntity.get());
         if (productSave == null) {
@@ -257,6 +257,23 @@ public class ProductService implements IProductService {
             p.get().setQuantity(oldQuantity - order.getNum());
             productRepository.save(p.get());
         }
+
+        return true;
+    }
+
+    @Override
+    public boolean stateProduct(long id, int state) {
+        var product = productRepository.findById(id);
+        if (product.isEmpty())
+            return false;
+
+        // If saving modification fail, return false
+        if (state == 1)
+            product.get().setStateProduct(StateProduct.DISABLED);
+        if (state == 0)
+            product.get().setStateProduct(StateProduct.ACTIVED);
+
+        productRepository.save(product.get());
 
         return true;
     }

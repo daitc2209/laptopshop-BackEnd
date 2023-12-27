@@ -1,12 +1,13 @@
 package com.datn.laptopshop.entity;
 
+import com.datn.laptopshop.enums.StateProduct;
+import com.datn.laptopshop.enums.StateUser;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -30,13 +31,13 @@ public class Product {
     @Column(name = "name", length = 300, unique = true)
     private String name;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     private int price;
 
     @Column(name = "discount")
     private int discount;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private int quantity;
 
     @Column(name = "img", length = 500)
@@ -45,13 +46,12 @@ public class Product {
     @Column(name = "description", length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Comment> comments;
+    @Column(name = "state")
+    private StateProduct stateProduct;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Gallery> galleries;
+    private List<Favourite> favourites;
 
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     @JsonIgnore

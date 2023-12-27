@@ -7,6 +7,7 @@ import com.datn.laptopshop.entity.Category;
 import com.datn.laptopshop.entity.OrderDetail;
 import com.datn.laptopshop.repos.CategoryRepository;
 import com.datn.laptopshop.repos.OrderDetailRepository;
+import com.datn.laptopshop.repos.OrderRepository;
 import com.datn.laptopshop.service.IRevenueService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class RevenueService implements IRevenueService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
@@ -61,7 +65,7 @@ public class RevenueService implements IRevenueService {
     @Override
     public List<Revenue> revenue() {
 
-        List<Object[]> list = orderDetailRepository.getOrderRevenueByMonth();
+        List<Object[]> list = orderRepository.getOrderRevenueByMonth();
         List<Revenue> revenueList = new ArrayList<>();
         for (Object[] obj : list ){
             Revenue r = new Revenue();
@@ -76,7 +80,7 @@ public class RevenueService implements IRevenueService {
 
     @Override
     public List<Revenue> revenueYear(String year) {
-        List<Object[]> list = orderDetailRepository.getOrderRevenueByYear(year);
+        List<Object[]> list = orderRepository.getOrderRevenueByYear(year);
         List<Revenue> revenueList = new ArrayList<>();
         for (Object[] obj : list ){
             Revenue r = new Revenue();
@@ -91,7 +95,7 @@ public class RevenueService implements IRevenueService {
 
     @Override
     public List<RevenueProduct> revenueProduct() {
-        List<Object[]> list = orderDetailRepository.getOrderRevenueByProduct();
+        List<Object[]> list = orderRepository.getOrderRevenueByProduct();
         List<RevenueProduct> revenueProductList = new ArrayList<>();
         for (Object[] obj : list){
             RevenueProduct r = new RevenueProduct();
@@ -108,7 +112,7 @@ public class RevenueService implements IRevenueService {
 
     @Override
     public List<Revenue> revenueRangeDay(Date start, Date end) {
-        List<Object[]> list = orderDetailRepository.getOrderRevenueByRangeDay(start, end);
+        List<Object[]> list = orderRepository.getOrderRevenueByRangeDay(start, end);
 
         List<Revenue> revenueList = new ArrayList<>();
         for (Object[] obj : list ){
@@ -122,6 +126,21 @@ public class RevenueService implements IRevenueService {
 
         return revenueList;
     }
+
+//    @Override
+//    public List<Revenue> statisticalByOrderWithMonth() {
+//        List<Object[]> list = orderRepository.getOrderByMonth();
+//        List<Revenue> revenueList = new ArrayList<>();
+//        for (Object[] obj : list ){
+//            Revenue r = new Revenue();
+//            r.setYear((int) obj[0]);
+//            r.setMonth((int) obj[1]);
+//            r.setTotal_money_month((long) obj[2]);
+//            revenueList.add(r);
+//        }
+//
+//        return revenueList;
+//    }
 
 
 }

@@ -72,7 +72,6 @@ public class CartController {
     @GetMapping
     public ResponseEntity<Object> getCartItems() {
         try {
-            System.out.println("Da vao duoc Get cart item !!");
             Collection<CartItem> cartItems = cartService.getAllItems();
             double totalMoney = cartService.getTotalMoney();
             int totalQuantity = cartService.getTotalQuantity();
@@ -141,7 +140,7 @@ public class CartController {
     public ResponseEntity<Object> clearCartItem(){
 
         cartService.clearItem();
-        System.out.println("clear thanh cong");
+
         return ResponseHandler.responseBuilder("Message",
                 "Clear Success",
                 HttpStatus.OK,"",0);

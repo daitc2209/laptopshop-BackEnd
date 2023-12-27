@@ -146,7 +146,7 @@ public class OrderService implements IOrderService {
     public List<OrderDto> findByOrderByStatus(StateOrder status) {
         List<Order> listOrder = orderRepository.findByOrderByStatus(status);
         if (listOrder.isEmpty()){
-            return null;
+            return new ArrayList<>();
         }
 
         List<OrderDto> listOrderDto = new ArrayList<>();

@@ -25,4 +25,7 @@ public interface IProductService {
     boolean delete(long id);
 
     boolean updateQuantityProduct(List<OrderDetailDto> list);
+
+    boolean stateProduct(long id, int state);
+
 }

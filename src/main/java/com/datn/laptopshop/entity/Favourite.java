@@ -11,16 +11,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "galleries")
-public class Gallery {
+@Table(name = "favourite")
+public class Favourite {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "favourite_id")
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "id",nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(name = "img", length = 500, nullable = false)
-    private String img;
 }

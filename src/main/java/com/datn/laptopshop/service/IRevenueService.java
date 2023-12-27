@@ -17,4 +17,6 @@ public interface IRevenueService {
     List<RevenueProduct> revenueProduct();
 
     List<Revenue> revenueRangeDay(Date start, Date end);
+
+//    List<Revenue> statisticalByOrderWithMonth();
 }
