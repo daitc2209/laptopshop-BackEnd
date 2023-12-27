@@ -32,7 +32,7 @@ public class User implements UserDetails{
     @Column(name = "username", length = 50,unique = true)
     private String username;
 
-    @Column(name = "hash_pw")
+    @Column(name = "hash_pw", nullable = false)
     private String hash_pw;
 
     @Column(name = "fullname", length = 50)

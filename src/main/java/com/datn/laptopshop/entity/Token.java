@@ -19,7 +19,7 @@ public class Token {
     @Column(name = "token_id")
     private Long id;
 
-    @Column(name = "access_token",unique = true)
+    @Column(name = "access_token", nullable = false, unique = true)
     public String accessToken;
 
     @Column(name = "token_type")

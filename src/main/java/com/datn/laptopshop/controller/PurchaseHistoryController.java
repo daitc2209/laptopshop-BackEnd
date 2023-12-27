@@ -107,11 +107,15 @@ public class PurchaseHistoryController {
         int total_money=0;
         Map m = new HashMap<>();
         List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.RECEIVED);
+//        List<OrderDto> order_delivering = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.DELIVERING);
+//        List<OrderDto> order_pending = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.PENDING);
+//        List<OrderDto> order_confirmed = orderService.findByOrderByStatus(IdLogged.getUser(), StateOrder.CONFIRMED);
         if (!order.isEmpty()) {
             for (OrderDto o : order) {
                 total_money += o.getTotal_money();
             }
         }
+//        m.put("total_order",(order.size() + order_confirmed.size() + order_pending.size()));
         m.put("total_order",order.size());
         m.put("total_money",total_money);
         return ResponseHandler.responseBuilder("Message","Get total order of user Success",

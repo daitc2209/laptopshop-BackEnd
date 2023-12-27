@@ -34,15 +34,12 @@ public class ProductAdminController {
     @GetMapping
     public ResponseEntity<?> showProductPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "name", defaultValue = "") String name,
-            @RequestParam(name = "price", defaultValue = "-1") int price,
-            @RequestParam(name = "discount", defaultValue = "-1") int discount,
-            @RequestParam(name = "categoryName", defaultValue = "0") long categoryName,
-            @RequestParam(name = "brandName", defaultValue = "0") long brandName) {
+            @RequestParam(name = "search_text", defaultValue = "") String text,
+            @RequestParam(name = "categoryId", defaultValue = "0") long categoryId,
+            @RequestParam(name = "brandId", defaultValue = "0") long brandId) {
 
         try{
-            SearchProductRequest search = new SearchProductRequest(name,price,discount,categoryName,brandName);
-            System.out.println("search: "+search.toString());
+            SearchProductRequest search = new SearchProductRequest(text,categoryId,brandId);
             int limit = 5;
             Map m = new HashMap<>();
             var listProduct = productService.findAll(page, limit,search);
@@ -73,7 +70,7 @@ public class ProductAdminController {
         try {
             if(discount >= 100)
                 discount = 100;
-            System.out.println("state: "+state);
+
             StateProduct stateProduct;
             try{
                 stateProduct = StateProduct.valueOf(state.toUpperCase());
@@ -82,8 +79,6 @@ public class ProductAdminController {
             {
                 stateProduct = null;
             }
-            System.out.println("state: "+state);
-            System.out.println("stateProduct: "+stateProduct);
 
             ProductDto productDto = new ProductDto();
             productDto.setName(name);
@@ -136,7 +131,6 @@ public class ProductAdminController {
         try{
             if(discount >= 100)
                 discount = 100;
-            System.out.println("state edit: "+state);
             StateProduct stateProduct;
             try{
                 stateProduct = StateProduct.valueOf(state.toUpperCase());
@@ -145,8 +139,6 @@ public class ProductAdminController {
             {
                 stateProduct = null;
             }
-            System.out.println("state edit: "+state);
-            System.out.println("stateProduct edit: "+stateProduct);
 
             ProductDto productDto = new ProductDto();
             productDto.setId(id);
@@ -198,7 +190,7 @@ public class ProductAdminController {
                 if (res){
                     return ResponseHandler.responseBuilder("success", "Unlock user successfully!\"", HttpStatus.OK,"",0);
                 }
-                return ResponseHandler.responseBuilder("error", "Unlock user failed!", HttpStatus.OK,"",0);
+                return ResponseHandler.responseBuilder("error", "Unlock user failed!", HttpStatus.OK,"",1);
 
         }catch (Exception e){
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);

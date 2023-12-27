@@ -28,32 +28,32 @@ public class Order {
     @JoinColumn(name = "id")
     private User user;
 
-    @Column(name = "code_order", length = 20)
+    @Column(name = "code_order", length = 20, nullable = false)
     private String codeOrder;
 
-    @Column(name = "name", length = 50)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
 
-    @Column(name = "email", length = 50)
+    @Column(name = "email", length = 50, nullable = false)
     private String email;
 
-    @Column(name = "phone", length = 11)
+    @Column(name = "phone", length = 11, nullable = false)
     private String phone;
 
-    @Column(name = "address_delivery")
+    @Column(name = "address_delivery", nullable = false)
     private String address_delivery;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date created_at;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private int num;
 
-    @Column(name = "total_money")
+    @Column(name = "total_money", nullable = false)
     private int total_money;
 
-    @Column(name = "payment", length = 50)
+    @Column(name = "payment", length = 50, nullable = false)
     private String payment;
 
     @Column(name = "state_checkout")

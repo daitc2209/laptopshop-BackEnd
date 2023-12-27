@@ -36,14 +36,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameStartsWith(String term);
 
     @Query("select p from Product p where " +
-            "(?1 is null or ?1 = '' or p.name like %?1%) " +
-            "and (?2 is null or ?2 = -1 or p.price = ?2) " +
-            "and (?3 is null or ?3 = -1 or p.discount = ?3) " +
-            "and (?4 is null or ?4 = 0 or p.category.id = ?4) " +
-            "and (?5 is null or ?5 = 0 or p.brand.id = ?5) ")
+            "(?1 is null or ?1 = '' or concat(p.name,p.description) like %?1%) " +
+            "and (?2 is null or ?2 = 0 or p.category.id = ?2) " +
+            "and (?3 is null or ?3 = 0 or p.brand.id = ?3) ")
     Page<Product> findAll(String name,
-                             int price,
-                             int discount,
                              long categoryName,
                              long brandName,
                              Pageable pageable);

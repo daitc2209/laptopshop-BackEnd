@@ -126,8 +126,7 @@ public class ProductService implements IProductService {
         Pageable p = PageRequest.of(page - 1, limit, sort);
         System.out.println("vao duoc service");
 
-        Page<Product> pageUser = productRepository.findAll(search.getName(),search.getPrice(),
-                search.getDiscount(),search.getCategoryName(),search.getBrandName(),p);
+        Page<Product> pageUser = productRepository.findAll(search.getText(),search.getCategoryId(),search.getBrandId(),p);
 
         if (pageUser.isEmpty())
             return null;

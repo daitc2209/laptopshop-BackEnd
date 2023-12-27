@@ -12,11 +12,9 @@ import java.lang.reflect.Field;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchProductRequest {
-    private String name;
-    private int price;
-    private int discount;
-    private long categoryName;
-    private long brandName;
+    private String text;
+    private long categoryId;
+    private long brandId;
 
     public boolean isEmpty()  {
         for (Field field : this.getClass().getDeclaredFields()) {
@@ -35,11 +33,9 @@ public class SearchProductRequest {
     @Override
     public String toString() {
         return "SearchProductRequest{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                ", discount=" + discount +
-                ", categoryName='" + categoryName + '\'' +
-                ", brandName='" + brandName + '\'' +
+                "text='" + text + '\'' +
+                ", categoryId=" + categoryId +
+                ", brandId=" + brandId +
                 '}';
     }
 }

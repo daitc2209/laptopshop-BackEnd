@@ -26,19 +26,19 @@ public class CheckOut {
     @JoinColumn(name = "id")
     private User user;
 
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private long amount;
 
-    @Column(name = "bank_code")
+    @Column(name = "bank_code", nullable = false)
     private String bankCode;
 
-    @Column(name = "card_type")
+    @Column(name = "card_type", nullable = false)
     private String cardType;
 
-    @Column(name = "order_info")
+    @Column(name = "order_info", nullable = false)
     private String orderInfo;
 
-    @Column(name = "pay_date")
+    @Column(name = "pay_date", nullable = false)
     private String payDate;
 
 }

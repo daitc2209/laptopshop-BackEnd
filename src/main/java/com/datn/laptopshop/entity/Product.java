@@ -28,7 +28,7 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @Column(name = "name", length = 300, unique = true)
+    @Column(name = "name", length = 300, unique = true, nullable = false)
     private String name;
 
     @Column(name = "price", nullable = false)

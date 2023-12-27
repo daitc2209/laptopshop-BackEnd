@@ -23,7 +23,7 @@ public class New {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "img")

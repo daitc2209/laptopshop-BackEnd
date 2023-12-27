@@ -132,7 +132,7 @@ public class RevenueController {
         var numUser = userService.findAll(1, 2,search);
         var numOrder = orderService.findByOrderByStatus(StateOrder.PENDING);
         var totalOrder = orderService.findByOrderByStatus(null);
-        var totalProduct = productService.findAll(1,2, new SearchProductRequest("",-1,-1,0,0));
+        var totalProduct = productService.findAll(1,2, new SearchProductRequest("",0,0));
         m.put("numUser",numUser.getTotalElements());
         m.put("numOrder",numOrder.size());
         m.put("totalOrder",totalOrder.size());
