@@ -1,5 +1,7 @@
 package com.datn.laptopshop.controller;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.JavaMail;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
@@ -29,15 +31,14 @@ import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*", allowedHeaders = "*",
-        methods = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.OPTIONS,RequestMethod.PUT,RequestMethod.HEAD}
-        ,allowCredentials = "false")
 public class UserController {
 
     @Autowired
     private IUserService userService;
     @Autowired
     private JavaMail javaMail;
+    @Autowired
+    private Cloudinary cloudinary;
 
     private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\user\\";
 
@@ -54,6 +55,7 @@ public class UserController {
             String token = UUID.randomUUID().toString();
             long tokenExpireAt = new Date().getTime() + TimeUnit.MINUTES.toMillis(5);
             var user = userService.register(u, token, tokenExpireAt);
+
             if(user != null) {
                 String subject = "Account Verification";
                 String verifyLink = "http://localhost:5173/auth/sign-up?token="+token;
@@ -61,9 +63,9 @@ public class UserController {
                         + "<p>Please click the link below to verify your registration:</p>"
                         + "<h3><a href='" + verifyLink + "'>VERIFY</a></h3>"
                         + "<p>Note: This link will expire in 5 minutes</p>";
-
+                System.out.println("vao duoc gui mail: ");
                 javaMail.sendEmail(user.getEmail(), subject, content);
-
+                System.out.println("qua duoc gui mail");
                 return ResponseHandler.responseBuilder("success",
                         "You have signed up successfully! Please check your email to verify your account",
                         HttpStatus.OK,"",0);
@@ -143,7 +145,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/user/profile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/user/profile")
     public ResponseEntity<Object> editProfile(
             @RequestParam(value = "fileImage", required = false) MultipartFile fileImage,
             @RequestParam(value = "id") Long id,
@@ -162,23 +164,17 @@ public class UserController {
             profile.setBirthday(birthday);
             profile.setEmail(email);
             profile.setPhone(phone);
-
+            System.out.println("img: "+fileImage);
             String nameImage = "";
             UserDto u = userService.findbyId(profile.getId());
             if (u != null){
-                if (fileImage != null && !fileImage.isEmpty()){
-
-                    nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-
-                    //tao duong dan den thu muc fontend , tao random truoc ten file anh
-                    String filePath=FOLDER_PATH+nameImage;
-
-                    //chuyen file anh do sang thu muc fontend
-                    fileImage.transferTo(new File(filePath));
-                    System.out.println("filePath: "+filePath);
-
-
+                try{
+                    Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
+                    nameImage = (String) r.get("url");
                     profile.setImg(nameImage);
+                }catch (Exception e){
+                    profile.setImg(null);
+                    e.printStackTrace();
                 }
 
                 boolean res = userService.update(profile);
@@ -216,7 +212,5 @@ public class UserController {
             return ResponseHandler.responseBuilder("error", e.getMessage(), HttpStatus.BAD_REQUEST,"",99);
         }
     }
-
-
 
 }

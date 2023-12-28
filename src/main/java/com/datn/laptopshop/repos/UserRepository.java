@@ -31,6 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.registerToken = ?1")
     Optional<User> findByRegisterToken(String token);
 
+    @Query("select u from User u where u.resetPasswordToken = ?1")
+    Optional<User> findByResetPasswordToken(String token);
+
     @Query("select u from User u where " +
             "(?1 is null or ?1 = '' or u.fullname like %?1%) " +
             "and (?2 is null or ?2 = '' or u.gender like %?2%) " +

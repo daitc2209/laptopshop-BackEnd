@@ -37,6 +37,12 @@ public interface IUserService {
 
     boolean changePW(long id,String oldPW, String newPW);
 
+    boolean forgotPW(String email, String token, long tokenExpireAt);
+
+    boolean resetPW(String token, String newPW);
+
+    boolean checkResetPWToken(String token);
+
     boolean logout(String token);
 
     Page<UserDto> findAll(int page, int limit, SearchUserRequest search);

@@ -28,7 +28,7 @@ public class Order {
     @JoinColumn(name = "id")
     private User user;
 
-    @Column(name = "code_order", length = 20, nullable = false)
+    @Column(name = "code_order", length = 20)
     private String codeOrder;
 
     @Column(name = "name", length = 50, nullable = false)

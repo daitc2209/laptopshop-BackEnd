@@ -1,5 +1,7 @@
 package com.datn.laptopshop.controller.Admin;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
 import com.datn.laptopshop.dto.request.AddUserRequest;
@@ -28,6 +30,9 @@ import java.util.UUID;
 public class UserAdminController {
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\user\\";
 
@@ -104,18 +109,21 @@ public class UserAdminController {
 
             UserDto u = userService.findbyId(edit.getId());
             if (u != null) {
-                if (fileImage != null && !fileImage.isEmpty()) {
-
-                    nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-
-                    //tao duong dan den thu muc fontend , tao random truoc ten file anh
-                    String filePath = FOLDER_PATH +nameImage;
-
-                    //chuyen file anh do sang thu muc fontend
-                    fileImage.transferTo(new File(filePath));
-
+//                if (fileImage != null && !fileImage.isEmpty()) {
+//                    nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
+//                    //tao duong dan den thu muc fontend , tao random truoc ten file anh
+//                    String filePath = FOLDER_PATH +nameImage;
+//                    //chuyen file anh do sang thu muc fontend
+//                    fileImage.transferTo(new File(filePath));
+//                    edit.setImg(nameImage);
+//                }
+                try{
+                    Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
+                    nameImage = (String) r.get("url");
                     edit.setImg(nameImage);
-
+                }catch (Exception e){
+                    edit.setImg(null);
+                    e.printStackTrace();
                 }
                 boolean res = userService.update(edit);
 

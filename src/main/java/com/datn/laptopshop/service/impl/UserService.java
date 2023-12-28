@@ -82,13 +82,13 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public UserDto register(SignUpRequest u,String token, long tokenExpireAt) throws Exception{
         try{
+            System.out.println("u: "+u.toString());
             if (u.getFullname() == null || u.getFullname() == ""
                     || u.getEmail()==null || u.getEmail() == ""
                     || u.getUsername()==null || u.getUsername() == ""
                     || u.getPassword() == null || u.getPassword() == ""
                     || u.getAddress() == null || u.getAddress()=="")
                 return null;
-
             Optional<User> userActive = userRepository.findByEmailAndStateUserAndAuthType(u.getUsername(),u.getEmail(), StateUser.ACTIVED, AuthenticationType.DATABASE);
             if (!userActive.isEmpty()) {
                 throw new Exception("The email already exists!");
@@ -104,6 +104,7 @@ public class UserService implements IUserService, UserDetailsService {
             user.setHash_pw(passwordEncoder.encode(u.getPassword()));
             user.setEmail(u.getEmail());
             user.setAddress(u.getAddress());
+            user.setPhone(" ");
             user.setStateUser(StateUser.PENDING);
             user.setAuthType(AuthenticationType.DATABASE);
             user.setCreated_at(new Date());
@@ -307,6 +308,51 @@ public class UserService implements IUserService, UserDetailsService {
             }
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean forgotPW(String email, String token, long tokenExpireAt) {
+        var user = userRepository.findByEmailAndStateUserAndAuthType("",email, StateUser.ACTIVED, AuthenticationType.DATABASE);
+        if(user.isPresent()) {
+            user.get().setResetPasswordToken(token);
+            user.get().setResetPasswordTokenExpireAt(tokenExpireAt);
+
+            userRepository.save(user.get());
+
+            return true;
+        }else {
+            System.out.println("Khong tim thay email");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean resetPW(String token, String newPW) {
+        var u = userRepository.findByResetPasswordToken(token);
+        if (u.isPresent()){
+            u.get().setHash_pw(passwordEncoder.encode(newPW));
+            userRepository.save(u.get());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkResetPWToken(String token) {
+        var user = userRepository.findByResetPasswordToken(token);
+        if (user.isPresent()){
+            long expireTokenAt = user.get().getResetPasswordTokenExpireAt();
+            long currentTime = new Date().getTime();
+            if (expireTokenAt - currentTime > 0)
+                return true;
+            else{
+                user.get().setResetPasswordToken(null);
+                user.get().setResetPasswordTokenExpireAt(null);
+                userRepository.save(user.get());
+                return false;
+            }
+        }
         return false;
     }
 

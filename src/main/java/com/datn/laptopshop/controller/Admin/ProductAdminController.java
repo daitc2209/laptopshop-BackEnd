@@ -1,5 +1,7 @@
 package com.datn.laptopshop.controller.Admin;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.ProductDto;
 import com.datn.laptopshop.dto.request.SearchProductRequest;
@@ -28,6 +30,9 @@ import java.util.UUID;
 public class ProductAdminController {
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\product\\";
 
@@ -90,11 +95,19 @@ public class ProductAdminController {
             productDto.setDescription(description);
             productDto.setState(stateProduct);
             String nameImage = "";
-            if (fileImage != null && !fileImage.isEmpty()){
-                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-                String filePath=FOLDER_PATH+nameImage;
-                fileImage.transferTo(new File(filePath));
+//            if (fileImage != null && !fileImage.isEmpty()){
+//                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
+//                String filePath=FOLDER_PATH+nameImage;
+//                fileImage.transferTo(new File(filePath));
+//                productDto.setImg(nameImage);
+//            }
+            try{
+                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
+                nameImage = (String) r.get("url");
                 productDto.setImg(nameImage);
+            }catch (Exception e){
+                productDto.setImg(null);
+                e.printStackTrace();
             }
             var p = productService.insert(productDto);
             if (p)
@@ -150,12 +163,20 @@ public class ProductAdminController {
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
             productDto.setState(stateProduct);
-            if (fileImage != null && !fileImage.isEmpty()) {
-                String nameImage = "";
-                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-                String filePath = FOLDER_PATH +nameImage;
-                fileImage.transferTo(new File(filePath));
+//            if (fileImage != null && !fileImage.isEmpty()) {
+//                String nameImage = "";
+//                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
+//                String filePath = FOLDER_PATH +nameImage;
+//                fileImage.transferTo(new File(filePath));
+//                productDto.setImg(nameImage);
+//            }
+            try{
+                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
+                String nameImage = (String) r.get("url");
                 productDto.setImg(nameImage);
+            }catch (Exception e){
+                System.out.println("Loi roi !!!");
+                e.printStackTrace();
             }
 
             System.out.println("productdto: "+productDto.toString());

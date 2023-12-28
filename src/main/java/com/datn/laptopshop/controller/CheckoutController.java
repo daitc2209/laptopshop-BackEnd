@@ -203,7 +203,7 @@ public class CheckoutController {
                     productsHtml.append("<tbody><tr>");
                     productsHtml.append("<td style=\"width:100%;padding:25px 10px 0px 0\" colspan=\"2\">");
                     productsHtml.append("<div style=\"float:left;width:80px;height:80px;border:1px solid #ebeff2;overflow:hidden\">");
-                    productsHtml.append("<img style=\"max-width:100%;max-height:100%\" src=\"D:/DATN/laptopshop_VueJS/laptopshop_vuejs/src/images/product/" + product.getProduct().getImg() + "\"></div>");
+                    productsHtml.append("<img style=\"max-width:100%;max-height:100%\" src=\"" + product.getProduct().getImg() + "\"></div>");
                     productsHtml.append("<div style=\"margin-left:100px\">");
                     productsHtml.append("<a href=\"#\" style=\"color:#357ebd;text-decoration:none\">" + product.getProduct().getName() + "</a><p style=\"color:#678299;margin-bottom:0;margin-top:8px\">Giá: " + product.getPrice() + " VND</p><p style=\"color:#678299;margin-bottom:0;margin-top:8px\">Giảm giá: " + product.getDiscount() + "%</p></div></td></tr>");
                     productsHtml.append("<tr>");

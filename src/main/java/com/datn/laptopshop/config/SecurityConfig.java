@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
         http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/login","/api/register","/api/cart/**",
+                .requestMatchers("/api/login","/api/register","/api/cart/**","/api/auth/**",
                         "/api/store/**","/api/search/**","/api/news","/api/news/**",
                         "/api/register/**","/api/getAllProduct","/api/checkout/vnpay").permitAll()
                         .requestMatchers("/api/user/**","/api/purchase-history","/api/order").hasAnyRole("ADMIN","USER")
