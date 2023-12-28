@@ -120,7 +120,7 @@ public class OrderService implements IOrderService {
     public List<OrderDto> findByOrderByStatus(String email, StateOrder status) {
         List<Order> listOrder = orderRepository.findByOrderByStatus(email, status);
         if (listOrder.isEmpty()){
-                return null;
+                return new ArrayList<>();
         }
 
         List<OrderDto> listOrderDto = new ArrayList<>();
