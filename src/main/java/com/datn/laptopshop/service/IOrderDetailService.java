@@ -5,5 +5,5 @@ import com.datn.laptopshop.dto.OrderDetailDto;
 import java.util.List;
 
 public interface IOrderDetailService {
-    List<OrderDetailDto> findByOrder(long id);
+    List<OrderDetailDto> findByOrder(int id);
 }

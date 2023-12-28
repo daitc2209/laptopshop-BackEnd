@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FavoutiteDto {
-    private Long id;
+    private int id;
     private ProductDto product;
 
     @Override

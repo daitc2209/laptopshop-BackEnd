@@ -38,7 +38,7 @@ public class NewsService implements INewsService {
         if (pageNews.isEmpty())
             return null;
 
-        Page<NewsDto> pageNewsDto =pageNews.map(n -> new NewsDto().toNewsDto(n));
+        Page<NewsDto> pageNewsDto = pageNews.map(n -> new NewsDto().toNewsDto(n));
 
         System.out.println("page data: "+ pageNewsDto.toString());
 
@@ -62,7 +62,7 @@ public class NewsService implements INewsService {
     }
 
     @Override
-    public NewsDto findById(long id) {
+    public NewsDto findById(int id) {
 
         var newItem = newsRepository.findById(id);
 
@@ -123,7 +123,7 @@ public class NewsService implements INewsService {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         var d = newsRepository.findById(id);
         if (d.isPresent()){
             newsRepository.delete(d.get());
@@ -132,19 +132,4 @@ public class NewsService implements INewsService {
         return false;
     }
 
-//    @Override
-//    public List<NewsDto> search(String keyword) {
-//        var k = newsRepository.search(keyword);
-//
-//        List<NewsDto> list = new ArrayList<>();
-//        for (New n : k){
-//            System.out.println("n: "+n.toString());
-//            NewsDto newsDto = new NewsDto().toNewsDto(n);
-//            var c = categoryRepository.findById(n.getId());
-//            newsDto.setCategoryName(c.get().getName());
-//            System.out.println("newsDto: "+newsDto.toString());
-//            list.add(newsDto);
-//        }
-//        return list;
-//    }
 }

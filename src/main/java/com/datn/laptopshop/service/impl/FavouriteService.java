@@ -43,7 +43,7 @@ public class FavouriteService implements IFavouriteService {
     }
 
     @Override
-    public boolean insert(String username, long product_id) {
+    public boolean insert(String username, int product_id) {
         var user = userRepository.findUser(username);
         var product = productRepository.findById(product_id);
         if (!user.isPresent() || !product.isPresent())
@@ -61,7 +61,7 @@ public class FavouriteService implements IFavouriteService {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         if (favouriteRepository.findById(id) == null)
         {
             System.out.println("The favour not exist !!");

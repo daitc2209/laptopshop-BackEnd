@@ -17,7 +17,7 @@ public class SearchUserRequest {
     private String address;
     private String email;
     private StateUser stateUser;
-    private long role;
+    private int role;
     private AuthenticationType authType;
 
     @Override

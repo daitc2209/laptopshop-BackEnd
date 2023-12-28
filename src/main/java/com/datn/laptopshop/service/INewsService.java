@@ -10,13 +10,13 @@ public interface INewsService {
 
     Page<NewsDto> findAll(int page, int limit);
 
-    NewsDto findById(long id);
+    NewsDto findById(int id);
 
     NewsDto insert(NewsDto newsDto);
 
     boolean update(NewsDto newsDto);
 
-    boolean delete(long id);
+    boolean delete(int id);
 
 //    List<NewsDto> search(String keyword);
 }

@@ -34,10 +34,9 @@ public class FavouriteController {
     }
 
     @PostMapping("/add-to-favour")
-    public ResponseEntity<Object> addProductToFavor(@RequestParam("productId") long id){
+    public ResponseEntity<Object> addProductToFavor(@RequestParam("productId") int id){
         try {
             var f = favouriteService.insert(IdLogged.getUser(),id);
-
             if (f)
                 return ResponseHandler.responseBuilder("Message","Success",
                         HttpStatus.OK,"",1);
@@ -51,7 +50,7 @@ public class FavouriteController {
     }
 
     @PostMapping("/delete-favour")
-    public ResponseEntity<Object> deleteProductToFavor(@RequestParam("id") long id){
+    public ResponseEntity<Object> deleteProductToFavor(@RequestParam("id") int id){
         try {
             var f = favouriteService.delete(id);
 

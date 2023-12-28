@@ -83,7 +83,6 @@ public class OrderService implements IOrderService {
         String date = formatter.format(order.getCreated_at());
         String codeOrder = "" + order.getId() + order.getUser().getId() + date;
         order.setCodeOrder(codeOrder);
-        System.out.println("codeOrder id trong orderService: "+codeOrder);
         orderRepository.save(order);
 
         return new OrderDto().toOrderDto(order);
@@ -98,7 +97,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public void updateStateCheckout(long id, StateCheckout paid) {
+    public void updateStateCheckout(int id, StateCheckout paid) {
         Optional<Order> o = orderRepository.findById(id);
         if (o.isPresent()){
             o.get().setStateCheckout(paid);
@@ -109,7 +108,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public OrderDto findById(long id) {
+    public OrderDto findById(int id) {
         var o = orderRepository.findById(id);
         if (o.isPresent())
             return new OrderDto().toOrderDto(o.get());
@@ -197,7 +196,17 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public boolean cancelOrder(long id) {
+    public boolean deleteOrder(int id) {
+        var o = orderRepository.findById(id);
+        if (o.isEmpty())
+            return false;
+        orderRepository.delete(o.get());
+
+        return true;
+    }
+
+    @Override
+    public boolean cancelOrder(int id) {
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty())
             return false;
@@ -260,7 +269,7 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public boolean updateStateOrder(long id, StateOrder status) {
+    public boolean updateStateOrder(int id, StateOrder status) {
 
         Optional<Order> order = orderRepository.findById(id);
         if (order.isEmpty()) {

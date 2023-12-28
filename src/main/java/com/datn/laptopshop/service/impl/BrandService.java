@@ -55,7 +55,7 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public BrandDto findById(long id) {
+    public BrandDto findById(int id) {
         var bItem = brandRepository.findById(id);
 
         if (bItem.isPresent()){
@@ -127,7 +127,7 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         // If the data does not exist, throw exception
         if (!brandRepository.existsById(id)) {
             System.out.println("The brand does not exist!");return false;

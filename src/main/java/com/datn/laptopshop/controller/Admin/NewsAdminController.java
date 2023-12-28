@@ -71,7 +71,7 @@ public class NewsAdminController {
     }
 
     @GetMapping("/news/edit/{id}")
-    public ResponseEntity<?> newApi(@PathVariable("id") long id) {
+    public ResponseEntity<?> newApi(@PathVariable("id") int id) {
         Map m = new HashMap<>();
         m.put("newsDto", newsService.findById(id));
         return ResponseHandler.responseBuilder("success","get edit Successed !!!!!",
@@ -97,7 +97,7 @@ public class NewsAdminController {
     }
 
     @PostMapping("/news/delete")
-    public ResponseEntity<?> deleteNews(@RequestParam("id") long id){
+    public ResponseEntity<?> deleteNews(@RequestParam("id") int id){
         try{
             boolean reponse = newsService.delete(id);
             if (reponse){

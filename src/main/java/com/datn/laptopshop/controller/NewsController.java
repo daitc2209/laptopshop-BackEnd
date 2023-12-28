@@ -43,7 +43,7 @@ public class NewsController {
     }
 
     @GetMapping("/news/detail")
-    public ResponseEntity<?> contactDetail(@RequestParam("id") long id, @RequestParam(name = "page", defaultValue = "1") int page) {
+    public ResponseEntity<?> contactDetail(@RequestParam("id") int id, @RequestParam(name = "page", defaultValue = "1") int page) {
 
         try {
             Map m = new HashMap<>();

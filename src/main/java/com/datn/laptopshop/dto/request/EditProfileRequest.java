@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditProfileRequest {
-    private Long id;
+    private int id;
     private String fullname;
     private String address;
     private String img;

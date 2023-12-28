@@ -20,7 +20,7 @@ public class AddUserRequest {
 
     private String password;
 
-    private Long role;
+    private int role;
 
     public boolean isEmpty()  {
         for (Field field : this.getClass().getDeclaredFields()) {

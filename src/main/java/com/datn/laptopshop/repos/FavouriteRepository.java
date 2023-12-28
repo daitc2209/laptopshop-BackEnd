@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface FavouriteRepository extends JpaRepository<Favourite, Long> {
+public interface FavouriteRepository extends JpaRepository<Favourite, Integer> {
     @Query("select f from Favourite f where f.user.id = ?1")
-    List<Favourite> findFavourByUser(long id);
+    List<Favourite> findFavourByUser(int id);
 
     @Query("select count(f) > 0 from Favourite f where f.user.id = ?1 and f.product.id = ?2")
-    boolean existsProductInFavour(long user_id, long product_id);
+    boolean existsProductInFavour(int user_id, int product_id);
 }

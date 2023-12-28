@@ -11,10 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RevenueProduct {
 
-    private long id;
+    private int id;
     private String name;
     private long amount;
-    private String thumbnail;
+    private String img;
     private String brandName;
     private String categoryName;
 }

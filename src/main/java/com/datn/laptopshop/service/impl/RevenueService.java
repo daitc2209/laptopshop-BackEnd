@@ -99,10 +99,10 @@ public class RevenueService implements IRevenueService {
         List<RevenueProduct> revenueProductList = new ArrayList<>();
         for (Object[] obj : list){
             RevenueProduct r = new RevenueProduct();
-            r.setId((long) obj[0]);
+            r.setId((int) obj[0]);
             r.setName((String) obj[1]);
             r.setAmount((long) obj[2]);
-            r.setThumbnail((String) obj[3]);
+            r.setImg((String) obj[3]);
             r.setBrandName((String) obj[4]);
             r.setCategoryName((String) obj[5]);
             revenueProductList.add(r);

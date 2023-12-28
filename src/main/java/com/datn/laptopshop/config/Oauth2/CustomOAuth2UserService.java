@@ -35,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         AuthenticationType authType = AuthenticationType.valueOf(oauth2ClientName.toUpperCase());
         Optional<User> u = userRepository.findByEmailAndStateUserAndAuthType("",customOAuth2User.getEmail(), StateUser.ACTIVED, authType);
         if (!u.isPresent()) {
-            customOAuth2User.setId(registerOauth2(customOAuth2User, authType));
+            customOAuth2User.setId( registerOauth2(customOAuth2User, authType));
         } else {
             customOAuth2User.setId(u.get().getId());
         }
@@ -43,14 +43,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return customOAuth2User;
     }
 
-    private long registerOauth2(CustomOAuth2User customOAuth2User, AuthenticationType authType) {
+    private int registerOauth2(CustomOAuth2User customOAuth2User, AuthenticationType authType) {
 
         User user = new User();
         user.setEmail(customOAuth2User.getEmail());
         user.setFullname(customOAuth2User.getName());
         user.setAddress(" ");
         user.setImg(customOAuth2User.getImg());
-        user.setRole(roleRepository.findById((long)2).get());
+        user.setRole(roleRepository.findById((int)2).get());
         user.setCreated_at(new Date());
         user.setStateUser(StateUser.ACTIVED);
         user.setAuthType(authType);

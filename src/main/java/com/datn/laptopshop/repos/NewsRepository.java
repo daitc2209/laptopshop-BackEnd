@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface NewsRepository extends JpaRepository<New, Long> {
+public interface NewsRepository extends JpaRepository<New, Integer> {
 
     @Query("Select k from New k where k.title like %?1%")
     Page<New> findAll(String keyword, Pageable pageable);

@@ -107,7 +107,6 @@ public class UserController {
     @GetMapping("/logout")
     public ResponseEntity<Object> logout(@RequestParam("token") String token){
         try {
-            System.out.println("vao duoc logout !!");
             var l = userService.logout(token);
             if (l)
                 return ResponseHandler.responseBuilder("success", "Logout success", HttpStatus.OK,"",0);
@@ -148,7 +147,7 @@ public class UserController {
     @PostMapping(value = "/user/profile")
     public ResponseEntity<Object> editProfile(
             @RequestParam(value = "fileImage", required = false) MultipartFile fileImage,
-            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "id") int id,
             @RequestParam(value = "fullname") String fullname,
             @RequestParam(value = "address") String address,
             @RequestParam(value = "sex") String sex,
@@ -164,7 +163,6 @@ public class UserController {
             profile.setBirthday(birthday);
             profile.setEmail(email);
             profile.setPhone(phone);
-            System.out.println("img: "+fileImage);
             String nameImage = "";
             UserDto u = userService.findbyId(profile.getId());
             if (u != null){

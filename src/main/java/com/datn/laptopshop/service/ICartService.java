@@ -7,13 +7,13 @@ import java.util.Collection;
 
 public interface ICartService {
     ResponseEntity<Object> addItem(CartItem cartItem);
-    ResponseEntity<Object> editItem(long id,int num);
+    ResponseEntity<Object> editItem(int id,int num);
 
-    void removeItem(long id);
+    void removeItem(int id);
 
     void clearItem();
 
-    CartItem findCartItem(long id);
+    CartItem findCartItem(int id);
 
     Collection<CartItem> getAllItems();
 

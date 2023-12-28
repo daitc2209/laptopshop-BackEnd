@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 public class CartService implements ICartService {
 
-    private Map<Long, CartItem> carts = new HashMap<>();
+    private Map<Integer, CartItem> carts = new HashMap<>();
 
     @Override
     public ResponseEntity<Object> addItem(CartItem item) {
@@ -36,7 +36,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public ResponseEntity<Object> editItem(long id, int num) {
+    public ResponseEntity<Object> editItem(int id, int num) {
         CartItem cartItem = carts.get(id);
         System.out.println("edit Item Service");
         if (cartItem == null ){
@@ -51,7 +51,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public void removeItem(long id) {
+    public void removeItem(int id) {
         carts.remove(id);
     }
 
@@ -61,7 +61,7 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public CartItem findCartItem(long id) {
+    public CartItem findCartItem(int id) {
         return carts.get(id);
     }
 

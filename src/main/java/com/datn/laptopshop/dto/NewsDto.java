@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NewsDto {
-    private Long id;
+    private int id;
     private String categoryName;
     private String title;
     private String img;

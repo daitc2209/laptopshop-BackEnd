@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CheckOutRepository extends JpaRepository<CheckOut, Long> {
+public interface CheckOutRepository extends JpaRepository<CheckOut, Integer> {
 }

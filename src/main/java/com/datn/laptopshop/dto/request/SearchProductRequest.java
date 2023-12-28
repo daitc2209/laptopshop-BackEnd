@@ -13,8 +13,8 @@ import java.lang.reflect.Field;
 @AllArgsConstructor
 public class SearchProductRequest {
     private String text;
-    private long categoryId;
-    private long brandId;
+    private int categoryId;
+    private int brandId;
 
     public boolean isEmpty()  {
         for (Field field : this.getClass().getDeclaredFields()) {

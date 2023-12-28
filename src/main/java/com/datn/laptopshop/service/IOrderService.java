@@ -17,23 +17,23 @@ public interface IOrderService {
 
     OrderDto findByCodeOrder(String codeOrder);
 
-    void updateStateCheckout(long id, StateCheckout paid);
+    void updateStateCheckout(int id, StateCheckout paid);
 
-    OrderDto findById(long id);
+    OrderDto findById(int id);
 
     List<OrderDto> findByOrderByStatus(String email,StateOrder status);
 
     List<OrderDto> findByOrderByStatus(StateOrder status);
 
-    boolean cancelOrder(long id);
+    boolean cancelOrder(int id);
 
     Page<OrderDto> findAll(int page, int limit, String search_text, StateOrder status);
 
     Page<OrderDto> findOrderByRangeDay(int page, int limit, String search_text, Date start, Date end, StateOrder status);
 
-    boolean updateStateOrder(long id,StateOrder status);
+    boolean updateStateOrder(int id,StateOrder status);
 
     List<OrderDto> findOrderByRangeDay(String email, Date start, Date end, StateOrder status);
 
-
+    boolean deleteOrder(int id);
 }

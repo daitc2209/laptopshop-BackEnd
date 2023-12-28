@@ -14,9 +14,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p where p.category.id = ?1 and p.stateProduct = 1")
-    List<Product> findAllProductWithCategoryId(Long id);
+    List<Product> findAllProductWithCategoryId(int id);
 
     @Query("SELECT p\n" +
             "FROM Product p, Brand b, Category c \n" +
@@ -40,13 +40,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "and (?2 is null or ?2 = 0 or p.category.id = ?2) " +
             "and (?3 is null or ?3 = 0 or p.brand.id = ?3) ")
     Page<Product> findAll(String name,
-                             long categoryName,
-                             long brandName,
+                             int categoryId,
+                             int brandId,
                              Pageable pageable);
 
     @Query("select count(p) > 0 from Product p where p.category.id = ?1")
-    boolean existsByCategory(long id);
+    boolean existsByCategory(int id);
 
     @Query("select count(p) > 0 from Product p where p.brand.id = ?1")
-    boolean existsByBrand(long id);
+    boolean existsByBrand(int id);
 }

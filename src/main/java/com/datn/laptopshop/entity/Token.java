@@ -17,7 +17,7 @@ public class Token {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "token_id")
-    private Long id;
+    private int id;
 
     @Column(name = "access_token", nullable = false, unique = true)
     public String accessToken;

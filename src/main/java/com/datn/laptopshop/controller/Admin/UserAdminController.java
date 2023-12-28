@@ -48,7 +48,7 @@ public class UserAdminController {
         try{
             SearchUserRequest search = new SearchUserRequest(fullname,sex,address,email,stateUser,2,authType);
 
-            int limit = 4;
+            int limit = 3;
             Map m = new HashMap<>();
             var listUser = userService.findAll(page, limit,search);
 
@@ -82,14 +82,14 @@ public class UserAdminController {
     }
 
     @GetMapping("/edit/{id}")
-    public UserDto userApi(@PathVariable("id") long id) {
+    public UserDto userApi(@PathVariable("id") int id) {
         return userService.findbyId(id);
     }
 
     @PostMapping("/edit")
     public ResponseEntity<?> handleUpdate(
             @RequestParam(value = "fileImage", required = false) MultipartFile fileImage,
-            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "id") int id,
             @RequestParam(value = "fullname") String fullname,
             @RequestParam(value = "address") String address,
             @RequestParam(value = "sex") String sex,
@@ -138,7 +138,7 @@ public class UserAdminController {
     }
 
     @PostMapping("/lock")
-    public ResponseEntity<?> lockUser(@RequestParam("id") long id){
+    public ResponseEntity<?> lockUser(@RequestParam("id") int id){
         try {
             boolean res = userService.lock(id, IdLogged.getUser());
             if (res){
@@ -151,7 +151,7 @@ public class UserAdminController {
     }
 
     @PostMapping("/unlock")
-    public ResponseEntity<?> unlockUser(@RequestParam("id") long id){
+    public ResponseEntity<?> unlockUser(@RequestParam("id") int id){
         try {
             boolean res = userService.unlock(id);
             if (res){
@@ -164,7 +164,7 @@ public class UserAdminController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam("id") long id){
+    public ResponseEntity<?> deleteUser(@RequestParam("id") int id){
         try {
             boolean res = userService.delete(id, IdLogged.getUser());
             if (res){

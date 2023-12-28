@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CategoryDto {
-    private Long id;
+    private int id;
     private String name;
 
     public CategoryDto toCateDto(Category category){

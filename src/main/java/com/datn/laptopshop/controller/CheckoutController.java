@@ -53,9 +53,6 @@ public class CheckoutController {
             @RequestParam("codeOrder") String codeOrder,
             @RequestParam("bankCode") String bankCode) throws IOException {
 
-        System.out.println("da vao PaymentVNPAY ******************");
-        System.out.println("bankCode trong PaymentVNPAY: "+bankCode);
-
         OrderDto orderEntity = orderService.findByCodeOrder(codeOrder);
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
@@ -73,7 +70,7 @@ public class CheckoutController {
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
         vnp_Params.put("vnp_Amount", String.valueOf(amount));
         vnp_Params.put("vnp_CurrCode", "VND");
-        vnp_Params.put("vnp_BankCode", bankCode);
+//        vnp_Params.put("vnp_BankCode", bankCode);
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef );
         vnp_Params.put("vnp_OrderType", orderType);
@@ -85,8 +82,6 @@ public class CheckoutController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         String vnp_CreateDate = formatter.format(orderEntity.getCreated_at());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-
-        System.out.println("vnp_params: "+ vnp_Params);
 
         cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
@@ -139,13 +134,13 @@ public class CheckoutController {
 
         Map m = new HashMap<>();
 
-        OrderDto orderEntity = orderService.findByCodeOrder(vnp_TxnRef);
+        OrderDto order = orderService.findByCodeOrder(vnp_TxnRef);
 
         if("00".equals(vnp_ResponseCode)) {
             CheckOutDto checkoutDto = new CheckOutDto();
             //Accounts and Orders Paid
-            checkoutDto.setOrder(orderEntity.getId());
-            checkoutDto.setUser(orderEntity.getUser());
+            checkoutDto.setOrder(order.getId());
+            checkoutDto.setUser(order.getUser());
             //Save information from vnpay returned
             checkoutDto.setAmount(Long.parseLong(vnp_Amount)/100);
             checkoutDto.setBankCode(vnp_BankCode);
@@ -155,25 +150,31 @@ public class CheckoutController {
             //Save Data
             checkoutService.insert(checkoutDto);
             //Change order status is successful payment
-            orderService.updateStateCheckout(orderEntity.getId(), StateCheckout.PAID);
+            orderService.updateStateCheckout(order.getId(), StateCheckout.PAID);
 
             m.put("success", "Giao dịch thàng công");
-        }else {
-            m.put("error", "Giao dịch thất bại");
-        }
-        boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(orderEntity.getId()));
-        if (!b)
-            return ResponseHandler.responseBuilder("Message","Check Out Failed!!!",
-                    HttpStatus.BAD_REQUEST,"",99);
-        m.put("order", orderEntity);
-        m.put("orderdetail", orderDetailService.findByOrder(orderEntity.getId()));
+            boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(order.getId()));
+            if (!b)
+                return ResponseHandler.responseBuilder("Message","Check Out Failed!!!",
+                        HttpStatus.BAD_REQUEST,"",99);
+            m.put("order", order);
+            m.put("orderdetail", orderDetailService.findByOrder(order.getId()));
 
-        return ResponseHandler.responseBuilder("Message","Check Out Success",
-                HttpStatus.OK,m,0);
+            return ResponseHandler.responseBuilder("Message","Check Out Success",
+                    HttpStatus.OK,m,0);
+        }else {
+            System.out.println("Don hang bi huy !!!!");
+            System.out.println("Chuan bi vao xoa don hang");
+            orderService.deleteOrder(order.getId());
+            System.out.println("Da xoa thanh cong don hang do");
+            m.put("error", "Giao dịch thất bại");
+            return ResponseHandler.responseBuilder("Message","Check Out Success",
+                    HttpStatus.OK,m,0);
+        }
     }
 
     @GetMapping("/getBill")
-    public ResponseEntity<Object> getBill(@RequestParam("id") long id){
+    public ResponseEntity<Object> getBill(@RequestParam("id") int id){
         boolean b = productService.updateQuantityProduct(orderDetailService.findByOrder(id));
         if (!b)
             return ResponseHandler.responseBuilder("Message","Get bill in checkout Failed!!!",

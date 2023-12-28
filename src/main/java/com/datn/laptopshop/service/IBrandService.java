@@ -11,10 +11,10 @@ public interface IBrandService {
     List<BrandDto> findAll();
 
     Page<BrandDto> findAll(int page, int limit, String search);
-    BrandDto findById(long id);
+    BrandDto findById(int id);
     boolean insert(BrandDto brandDto);
 
     boolean update(BrandDto brandDto);
 
-    boolean delete(long id);
+    boolean delete(int id);
 }

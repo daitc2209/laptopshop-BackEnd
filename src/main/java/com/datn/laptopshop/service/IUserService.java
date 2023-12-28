@@ -30,12 +30,12 @@ public interface IUserService {
 
     UserDto findUserByUsername(String name);
 
-    UserDto findbyId(long id);
+    UserDto findbyId(int id);
 
     boolean update(EditProfileRequest profile);
     boolean update(EditUserRequest edit);
 
-    boolean changePW(long id,String oldPW, String newPW);
+    boolean changePW(int id,String oldPW, String newPW);
 
     boolean forgotPW(String email, String token, long tokenExpireAt);
 
@@ -49,9 +49,9 @@ public interface IUserService {
 
     boolean insert(AddUserRequest addUserRequest);
 
-    boolean lock(long id, String username);
+    boolean lock(int id, String username);
 
-    boolean unlock(long id);
+    boolean unlock(int id);
 
-    boolean delete(long id, String username);
+    boolean delete(int id, String username);
 }

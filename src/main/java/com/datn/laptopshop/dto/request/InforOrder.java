@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InforOrder {
-    private Long userId;
+    private int userId;
     private String name;
     private String email;
 

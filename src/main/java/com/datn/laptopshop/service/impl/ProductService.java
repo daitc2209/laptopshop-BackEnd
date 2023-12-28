@@ -43,7 +43,7 @@ public class ProductService implements IProductService {
     OrderDetailRepository OrderDetailRepository;
 
     @Override
-    public List<ProductDto> findByCategoryId(long id) {
+    public List<ProductDto> findByCategoryId(int id) {
 
         List<Product> listProduct = productRepository.findAllProductWithCategoryId(id);
         if(listProduct == null)
@@ -94,7 +94,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDto findProductId(long id) {
+    public ProductDto findProductId(int id) {
         try{
             var product =  productRepository.findById(id);
             if (product.isPresent()){
@@ -219,7 +219,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         // If the data does not exist, throw exception
         if (!productRepository.existsById(id)) {
             System.out.println("product not exist!!");
@@ -261,7 +261,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public boolean stateProduct(long id, int state) {
+    public boolean stateProduct(int id, int state) {
         var product = productRepository.findById(id);
         if (product.isEmpty())
             return false;

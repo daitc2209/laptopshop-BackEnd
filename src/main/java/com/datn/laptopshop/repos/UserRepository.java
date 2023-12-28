@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u where u.username = ?1 and u.stateUser = 'ACTIVED'")
     Optional<User> findUserByUsername(String username);
 
@@ -48,6 +48,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
                        String email,
                        StateUser stateUser,
                        AuthenticationType authType,
-                       Long role,
+                       int role,
                        Pageable pageable);
 }

@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CheckOutDto {
-    private Long id;
-    private Long order;
-    private Long user;
+    private int id;
+    private int order;
+    private int user;
     private long amount;
     private String bankCode;
     private String cardType;

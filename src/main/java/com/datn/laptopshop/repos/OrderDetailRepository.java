@@ -10,10 +10,10 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> {
+public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
 
     @Query("SELECT o FROM OrderDetail o where o.order.id= ?1")
-    List<OrderDetail> findByOrder(long id);
+    List<OrderDetail> findByOrder(int id);
 
     @Query("SELECT od FROM Order o, OrderDetail od, Product p, Category c, Brand b " +
             "where o.id = od.order.id and od.product.id = p.id and c.id = p.category.id and b.id = p.brand.id " +
@@ -21,6 +21,6 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
     List<OrderDetail> getOrderRevenueByCategories(String name);
 
     @Query("select count(o) > 0 from OrderDetail o where o.product.id = ?1")
-    boolean existsByProduct(long id);
+    boolean existsByProduct(int id);
 
 }

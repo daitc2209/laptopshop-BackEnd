@@ -105,10 +105,11 @@ public class UserService implements IUserService, UserDetailsService {
             user.setEmail(u.getEmail());
             user.setAddress(u.getAddress());
             user.setPhone(" ");
+            user.setGender(" ");
             user.setStateUser(StateUser.PENDING);
             user.setAuthType(AuthenticationType.DATABASE);
             user.setCreated_at(new Date());
-            Role role = roleRepository.findById((long) 2).get();
+            Role role = roleRepository.findById((int) 2).get();
             user.setRole(role);
             user.setRegisterToken(token);
             user.setRegisterTokenExpireAt(tokenExpireAt);
@@ -221,7 +222,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public UserDto findbyId(long id) {
+    public UserDto findbyId(int id) {
         var u = userRepository.findById(id);
         if (u.isPresent())
             return new UserDto().toUserDTO(u.get());
@@ -296,7 +297,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean changePW(long id, String oldPW, String newPW) {
+    public boolean changePW(int id, String oldPW, String newPW) {
         if (oldPW == null || newPW == null || oldPW=="" || newPW=="" || oldPW == newPW)
             return false;
         var u = userRepository.findById(id);
@@ -413,7 +414,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean lock(long id, String username) {
+    public boolean lock(int id, String username) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty() || user.get().getUsername().equals(username))
             return false;
@@ -428,7 +429,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean unlock(long id) {
+    public boolean unlock(int id) {
         // If the data to be modified is not found, throw exception
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty())
@@ -444,7 +445,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean delete(long id, String username) {
+    public boolean delete(int id, String username) {
         Optional<User> user = userRepository.findById(id);
         if (user.isEmpty() || user.get().getUsername().equals(username))
             return false;

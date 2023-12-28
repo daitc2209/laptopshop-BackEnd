@@ -71,7 +71,7 @@ public class BrandAdminController {
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<?> brandApi(@PathVariable("id") long id) {
+    public ResponseEntity<?> brandApi(@PathVariable("id") int id) {
         Map m = new HashMap<>();
         m.put("brandDto", brandService.findById(id));
         return ResponseHandler.responseBuilder("success","get edit Successfully !!!!!",
@@ -97,7 +97,7 @@ public class BrandAdminController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteBrands(@RequestParam("id") long id){
+    public ResponseEntity<?> deleteBrands(@RequestParam("id") int id){
         try{
             boolean res = brandService.delete(id);
             if (res){

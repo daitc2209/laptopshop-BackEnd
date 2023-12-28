@@ -13,17 +13,17 @@ import java.util.Map;
 public class CustomOAuth2User implements OAuth2User, UserDetails {
     private OAuth2User oauth2User;
 
-    private long id;
+    private int id;
 
     public CustomOAuth2User(OAuth2User oauth2User) {
         this.oauth2User = oauth2User;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

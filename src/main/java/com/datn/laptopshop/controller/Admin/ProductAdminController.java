@@ -40,8 +40,8 @@ public class ProductAdminController {
     public ResponseEntity<?> showProductPage(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "search_text", defaultValue = "") String text,
-            @RequestParam(name = "categoryId", defaultValue = "0") long categoryId,
-            @RequestParam(name = "brandId", defaultValue = "0") long brandId) {
+            @RequestParam(name = "categoryId", defaultValue = "0") int categoryId,
+            @RequestParam(name = "brandId", defaultValue = "0") int brandId) {
 
         try{
             SearchProductRequest search = new SearchProductRequest(text,categoryId,brandId);
@@ -95,12 +95,6 @@ public class ProductAdminController {
             productDto.setDescription(description);
             productDto.setState(stateProduct);
             String nameImage = "";
-//            if (fileImage != null && !fileImage.isEmpty()){
-//                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-//                String filePath=FOLDER_PATH+nameImage;
-//                fileImage.transferTo(new File(filePath));
-//                productDto.setImg(nameImage);
-//            }
             try{
                 Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
                 nameImage = (String) r.get("url");
@@ -125,14 +119,14 @@ public class ProductAdminController {
 
 
     @GetMapping("/edit/{id}")
-    public ProductDto productApi(@PathVariable("id") long id) {
+    public ProductDto productApi(@PathVariable("id") int id) {
         return productService.findProductId(id);
     }
 
     @PostMapping("/edit")
     public ResponseEntity<?> handleUpdate(
             @RequestParam(value = "fileImage", required = false) MultipartFile fileImage,
-            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "id") int id,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "categoryName") String categoryName,
             @RequestParam(value = "brandName") String brandName,
@@ -163,13 +157,6 @@ public class ProductAdminController {
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
             productDto.setState(stateProduct);
-//            if (fileImage != null && !fileImage.isEmpty()) {
-//                String nameImage = "";
-//                nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-//                String filePath = FOLDER_PATH +nameImage;
-//                fileImage.transferTo(new File(filePath));
-//                productDto.setImg(nameImage);
-//            }
             try{
                 Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
                 String nameImage = (String) r.get("url");
@@ -192,7 +179,7 @@ public class ProductAdminController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteProduct(@RequestParam("id") long id){
+    public ResponseEntity<?> deleteProduct(@RequestParam("id") int id){
         try {
             boolean res = productService.delete(id);
             if (res){
@@ -205,7 +192,7 @@ public class ProductAdminController {
     }
 
     @PostMapping("/lock_unlock")
-    public ResponseEntity<?> lock_unlock(@RequestParam("id") long id, @RequestParam("state") int state){
+    public ResponseEntity<?> lock_unlock(@RequestParam("id") int id, @RequestParam("state") int state){
         try {
                 boolean res = productService.stateProduct(id,state);
                 if (res){

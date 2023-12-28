@@ -16,8 +16,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderDto {
-    private Long id;
-    private Long user;
+    private int id;
+    private int user;
     private String codeOrder;
     private String name;
     private String email;
@@ -32,7 +32,7 @@ public class OrderDto {
     private List<OrderDetailDto> orderdetail;
     private String note;
 
-    public OrderDto(Long id, Long idUser, String codeOrder, String name, String email,
+    public OrderDto(int id, int idUser, String codeOrder, String name, String email,
                     String phone, String addressDelivery, Date createdAt,
                     int num, int totalMoney, String payment, StateCheckout stateCheckout, StateOrder stateOrder, String note) {
         this.id = id;

@@ -10,10 +10,10 @@ public interface ICategoryService {
     List<CategoryDto> findAll();
 
     Page<CategoryDto> findAll(int page, int limit, String search);
-    CategoryDto findById(long id);
+    CategoryDto findById(int id);
     boolean insert(CategoryDto categoryDto);
 
     boolean update(CategoryDto categoryDto);
 
-    boolean delete(long id);
+    boolean delete(int id);
 }

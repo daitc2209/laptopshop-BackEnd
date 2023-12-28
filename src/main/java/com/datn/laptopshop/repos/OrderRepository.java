@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT o from Order o where o.codeOrder = ?1")
     Optional<Order> findByCodeOrder(String codeOrder);
 

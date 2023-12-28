@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDto {
-    private Long id;
+    private int id;
     private String categoryName;
     private String brandName;
     private String name;

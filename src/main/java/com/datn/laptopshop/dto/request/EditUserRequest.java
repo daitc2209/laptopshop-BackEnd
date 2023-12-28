@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EditUserRequest {
-    private Long id;
+    private int id;
 
     private String fullname;
 

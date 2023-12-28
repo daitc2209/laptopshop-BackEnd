@@ -53,13 +53,13 @@ public class CategoryService implements ICategoryService {
         if (pageCate.isEmpty())
             return null;
 
-        Page<CategoryDto> pageDto =pageCate.map(n -> new CategoryDto().toCateDto(n));
+        Page<CategoryDto> pageDto = pageCate.map(n -> new CategoryDto().toCateDto(n));
 
         return pageDto;
     }
 
     @Override
-    public CategoryDto findById(long id) {
+    public CategoryDto findById(int id) {
         var cItem = categoryRepository.findById(id);
 
         if (cItem.isPresent()){
@@ -135,7 +135,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean delete(int id) {
         // If the data does not exist, throw exception
         if (!categoryRepository.existsById(id)) {
             System.out.println("The category does not exist!");

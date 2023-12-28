@@ -70,7 +70,7 @@ public class CategoryAdminController {
     }
 
     @GetMapping("/edit/{id}")
-    public ResponseEntity<?> categoriesApi(@PathVariable("id") long id) {
+    public ResponseEntity<?> categoriesApi(@PathVariable("id") int id) {
         Map m = new HashMap<>();
         m.put("categoryDto", categoryService.findById(id));
         return ResponseHandler.responseBuilder("success","get edit Successfully !!!!!",
@@ -96,7 +96,7 @@ public class CategoryAdminController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteCategory(@RequestParam("id") long id){
+    public ResponseEntity<?> deleteCategory(@RequestParam("id") int id){
         try{
             boolean res = categoryService.delete(id);
             if (res){

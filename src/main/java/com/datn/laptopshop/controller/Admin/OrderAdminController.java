@@ -112,7 +112,7 @@ public class OrderAdminController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> orderById(@PathVariable(name = "id") long id){
+    public ResponseEntity<?> orderById(@PathVariable(name = "id") int id){
         try {
             Map m = new HashMap<>();
             var orders = orderService.findById(id);
@@ -130,7 +130,7 @@ public class OrderAdminController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verify(@RequestParam("id") long id,
+    public ResponseEntity<?> verify(@RequestParam("id") int id,
                                     @RequestParam("status") StateOrder status) {
         try {
             boolean verify = orderService.updateStateOrder(id, status);

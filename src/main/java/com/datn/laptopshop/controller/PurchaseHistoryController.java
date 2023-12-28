@@ -46,7 +46,7 @@ public class PurchaseHistoryController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Object> cancelOrder(@RequestParam("id") long id, @RequestParam("status") StateOrder status){
+    public ResponseEntity<Object> cancelOrder(@RequestParam("id") int id, @RequestParam("status") StateOrder status){
         Map m = new HashMap<>();
         boolean cancel = orderService.cancelOrder(id);
         List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), status);

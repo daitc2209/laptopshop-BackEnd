@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IProductService {
-    List<ProductDto> findByCategoryId(long id);
+    List<ProductDto> findByCategoryId(int id);
 
     Page<ProductDto> findAll(FilterProductRequest filterProduct, int page, int limit);
 
-    ProductDto findProductId(long id);
+    ProductDto findProductId(int id);
 
     List<ProductDto> findByNameSearch(String term);
 
@@ -22,10 +22,10 @@ public interface IProductService {
 
     boolean insert(ProductDto productDto);
     boolean update(ProductDto productDto);
-    boolean delete(long id);
+    boolean delete(int id);
 
     boolean updateQuantityProduct(List<OrderDetailDto> list);
 
-    boolean stateProduct(long id, int state);
+    boolean stateProduct(int id, int state);
 
 }

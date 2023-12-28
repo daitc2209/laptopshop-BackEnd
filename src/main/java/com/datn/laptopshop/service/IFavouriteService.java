@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IFavouriteService {
     List<FavoutiteDto> findAll(String username);
-    boolean insert(String username, long product_id);
-    boolean delete(long id);
+    boolean insert(String username, int product_id);
+    boolean delete(int id);
 }

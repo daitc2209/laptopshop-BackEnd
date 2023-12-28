@@ -16,7 +16,7 @@ public class CheckOut {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "checkout_id")
-    private Long id;
+    private int id;
 
     @ManyToOne
     @JoinColumn(name = "order_id")

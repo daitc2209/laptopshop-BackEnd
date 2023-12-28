@@ -21,7 +21,7 @@ public class OrderDetailService implements IOrderDetailService {
     private OrderDetailRepository orderDetailRepository;
 
     @Override
-    public List<OrderDetailDto> findByOrder(long id) {
+    public List<OrderDetailDto> findByOrder(int id) {
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrder(id);
 
         List<OrderDetailDto> orderDetailDtos = new ArrayList<>();

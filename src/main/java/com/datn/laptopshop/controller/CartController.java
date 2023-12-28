@@ -26,11 +26,9 @@ public class CartController {
 
     @PostMapping("/add-to-cart")
     public ResponseEntity<Object> addToCart(
-            @RequestParam(name = "productId") Long productId,
+            @RequestParam(name = "productId") int productId,
             @RequestParam(name = "num",defaultValue = "1") int num){
         try {
-            System.out.println("Da vao duoc add to cart !!");
-            System.out.println("num: "+num);
             ProductDto product = productService.findProductId(productId);
             if (product == null) {
                 return ResponseEntity.badRequest().body("Invalid product ID");
@@ -88,7 +86,7 @@ public class CartController {
 
     @GetMapping("/edit-cart/{productId}/{num}")
     public ResponseEntity<Object> editCartItem(
-            @PathVariable("productId") long productId,
+            @PathVariable("productId") int productId,
             @PathVariable("num") int num){
         try {
             CartItem cartItem = cartService.findCartItem(productId);
@@ -123,7 +121,7 @@ public class CartController {
     }
 
     @GetMapping("/delete-cart/{id}")
-    public ResponseEntity<Object> deleteCartItem(@PathVariable("id") long productId){
+    public ResponseEntity<Object> deleteCartItem(@PathVariable("id") int productId){
         var o = cartService.findCartItem(productId);
         if (o != null){
             cartService.removeItem(productId);

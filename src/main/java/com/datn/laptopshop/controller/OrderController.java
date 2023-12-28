@@ -80,8 +80,6 @@ public class OrderController {
 
             Collection<CartItem> carts = cartService.getAllItems();
             OrderDto orderDto = orderService.order(carts, inforOrder);
-            System.out.println("orderDto: "+orderDto.toString());
-            System.out.println("type: "+order.getTypePayment());
             if (orderDto != null){
                 cartService.clearItem();
 
@@ -93,7 +91,6 @@ public class OrderController {
                             HttpStatus.OK,m,0);
                 }
                 else if (order.getTypePayment().equals("COD")){
-                    System.out.println("thanh toan: COD");
                     String redirectUrl = "http://localhost:5173/bill";
                     m.put("redirectUrl", redirectUrl);
                     m.put("typePayment","COD");
