@@ -163,10 +163,7 @@ public class CheckoutController {
             return ResponseHandler.responseBuilder("Message","Check Out Success",
                     HttpStatus.OK,m,0);
         }else {
-            System.out.println("Don hang bi huy !!!!");
-            System.out.println("Chuan bi vao xoa don hang");
             orderService.deleteOrder(order.getId());
-            System.out.println("Da xoa thanh cong don hang do");
             m.put("error", "Giao dịch thất bại");
             return ResponseHandler.responseBuilder("Message","Check Out Success",
                     HttpStatus.OK,m,0);

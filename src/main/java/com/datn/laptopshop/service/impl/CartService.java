@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CartService implements ICartService {
@@ -23,6 +21,7 @@ public class CartService implements ICartService {
     public ResponseEntity<Object> addItem(CartItem item) {
         CartItem cartItem = carts.get(item.getProductId());
         System.out.println("vao duoc additem Service");
+        System.out.println("Them san pham: "+item.toString());
         if (cartItem == null) {
             System.out.println("vao duoc additem Service: khong co item trong cart");
             carts.put(item.getProductId(), item);
@@ -39,6 +38,7 @@ public class CartService implements ICartService {
     public ResponseEntity<Object> editItem(int id, int num) {
         CartItem cartItem = carts.get(id);
         System.out.println("edit Item Service");
+        System.out.println("Them san pham: "+cartItem.toString());
         if (cartItem == null ){
             return ResponseHandler.responseBuilder("Error","Item not in cart", HttpStatus.BAD_REQUEST,"",99);
         }
@@ -66,8 +66,8 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Collection<CartItem> getAllItems() {
-        return carts.values().isEmpty() ? null : carts.values();
+    public List<CartItem> getAllItems() {
+        return carts.values().isEmpty() ? new ArrayList<>() : new ArrayList<>(carts.values());
     }
 
     @Override

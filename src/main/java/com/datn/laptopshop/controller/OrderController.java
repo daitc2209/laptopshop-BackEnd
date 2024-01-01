@@ -14,10 +14,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -78,7 +75,7 @@ public class OrderController {
             inforOrder.setPayment(order.getTypePayment());
             inforOrder.setAddress_delivery(order.getAddress());
 
-            Collection<CartItem> carts = cartService.getAllItems();
+            List<CartItem> carts = cartService.getAllItems();
             OrderDto orderDto = orderService.order(carts, inforOrder);
             if (orderDto != null){
                 cartService.clearItem();

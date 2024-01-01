@@ -43,6 +43,7 @@ public class CartController {
                     product.getPrice(),
                     product.getDiscount(),
                     product.getImg(),
+                    product.getQuantity(),
                     numProduct,
                     numProduct * (product.getPrice() - (product.getPrice() * product.getDiscount() / 100))
             );
@@ -70,7 +71,7 @@ public class CartController {
     @GetMapping
     public ResponseEntity<Object> getCartItems() {
         try {
-            Collection<CartItem> cartItems = cartService.getAllItems();
+            var cartItems = cartService.getAllItems();
             double totalMoney = cartService.getTotalMoney();
             int totalQuantity = cartService.getTotalQuantity();
             Map m = new HashMap<>();

@@ -48,7 +48,7 @@ public class UserAdminController {
         try{
             SearchUserRequest search = new SearchUserRequest(fullname,sex,address,email,stateUser,2,authType);
 
-            int limit = 3;
+            int limit = 5;
             Map m = new HashMap<>();
             var listUser = userService.findAll(page, limit,search);
 
@@ -106,7 +106,6 @@ public class UserAdminController {
             edit.setStateUser(stateUser);
             edit.setPhone(phone);
             String nameImage = "";
-
             UserDto u = userService.findbyId(edit.getId());
             if (u != null) {
 //                if (fileImage != null && !fileImage.isEmpty()) {

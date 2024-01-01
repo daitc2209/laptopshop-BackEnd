@@ -33,7 +33,7 @@ public class CategoryAdminController {
             @RequestParam(name = "page",defaultValue = "1") int page,
             @RequestParam(value = "search", defaultValue = "") String search){
         try {
-            int limit = 4;
+            int limit = 6;
             Map m = new HashMap<>();
             var listCategories = categoryService.findAll(page,limit,search);
             if (listCategories != null){

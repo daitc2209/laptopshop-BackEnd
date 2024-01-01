@@ -23,6 +23,9 @@ public class Brand {
     @Column(name = "name", length = 100, unique = true)
     private String name;
 
+    @Column(name = "img", length = 500)
+    private String img;
+
     @OneToMany(mappedBy = "brand", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Product> products;

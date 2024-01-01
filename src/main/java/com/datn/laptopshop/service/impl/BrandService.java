@@ -1,5 +1,7 @@
 package com.datn.laptopshop.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.dto.BrandDto;
 import com.datn.laptopshop.dto.CategoryDto;
 import com.datn.laptopshop.entity.Brand;
@@ -14,9 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -28,6 +32,9 @@ public class BrandService implements IBrandService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public List<BrandDto> findAll() {
@@ -66,24 +73,32 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public boolean insert(BrandDto brandDto) {
+    public boolean insert(String name, MultipartFile img) {
         // If the input is null, throw exception
-        if (brandDto == null) {
+        if (name == null || name =="") {
             System.out.println("The input is null!"); return false;
         }
 
-        // If the input is empty, throw exception
-        if (brandDto.isEmpty()) {
-            System.out.println("The input is empty!");return false;
+        // If the brand name already exists, throw exception
+        if (brandRepository.existsByName(name)) {
+            System.out.println("The brand name already exists!");return false;
         }
 
-        // If the brand name already exists, throw exception
-        if (brandRepository.existsByName(brandDto.getName())) {
-            System.out.println("The brand name already exists!");return false;
+        BrandDto brandDto = new BrandDto();
+        brandDto.setName(name);
+        try {
+            Map r = cloudinary.uploader()
+                        .upload(img.getBytes(), ObjectUtils.asMap("folder","images/banner"));
+            brandDto.setImg((String) r.get("url"));
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+            brandDto.setImg(null);
         }
 
         Brand brandEntity = new Brand();
         brandEntity.setName(brandDto.getName());
+        brandEntity.setImg(brandDto.getImg());
         Brand brandSave = brandRepository.save(brandEntity);
 
         if (!brandRepository.existsById(brandSave.getId())) {
@@ -94,29 +109,34 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public boolean update(BrandDto brandDto) {
+    public boolean update(String name, MultipartFile img) {
         // If the input is null, throw exception
-        if (brandDto == null) {
+        if (name == null) {
             System.out.println("The input is null!"); return false;
         }
 
-        // If the input is empty, throw exception
-        if (brandDto.isEmpty()) {
-            System.out.println("The input is empty!");return false;
-        }
-
         // If the data to be modified is not found, throw exception
-        Optional<Brand> oldBrandEntity = brandRepository.findById(brandDto.getId());
+        Optional<Brand> oldBrandEntity = brandRepository.findByName(name);
         if (oldBrandEntity.isEmpty()) {
             System.out.println("The data to be modified is not found!");return false;
         }
 
         // If the new brand name is different from the old brand name and the new brand name already exists, throw exception
-        if(!oldBrandEntity.get().getName().equals(brandDto.getName()) && brandRepository.existsByName(brandDto.getName())) {
+        if(!oldBrandEntity.get().getName().equals(name) && brandRepository.existsByName(name)) {
             System.out.println("The brand name already exists!");return false;
         }
 
-        oldBrandEntity.get().setName(brandDto.getName());
+        if (name != "" && name != null)
+            oldBrandEntity.get().setName(name);
+        if (img != null) {
+            try {
+                Map r = cloudinary.uploader()
+                        .upload(img.getBytes(), ObjectUtils.asMap("folder", "images/banner"));
+                oldBrandEntity.get().setImg((String) r.get("url"));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         Brand brandSave = brandRepository.save(oldBrandEntity.get());
 
         if (brandSave == null) {

@@ -15,6 +15,7 @@ public class CartItem {
     private int price;
     private int discount;
     private String img;
+    private int quantity_in_stock;
     private int numProduct;
     private int totalPrice;
 

@@ -38,7 +38,7 @@ public class OrderService implements IOrderService {
     private OrderDetailRepository orderDetailRepository;
 
     @Override
-    public OrderDto order(Collection<CartItem> carts, InforOrder inforOrder) {
+    public OrderDto order(List<CartItem> carts, InforOrder inforOrder) {
         if (inforOrder == null || carts == null)
         {
             ResponseHandler.responseBuilder("Error","The input is null",

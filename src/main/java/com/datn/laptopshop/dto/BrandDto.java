@@ -15,9 +15,10 @@ import java.lang.reflect.Field;
 public class BrandDto {
     private int id;
     private String name;
+    private String img;
 
     public BrandDto toBrandDto(Brand brand){
-        return new BrandDto(brand.getId(), brand.getName());
+        return new BrandDto(brand.getId(), brand.getName(),brand.getImg());
     }
 
     public boolean isEmpty()  {

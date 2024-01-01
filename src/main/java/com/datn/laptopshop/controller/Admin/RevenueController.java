@@ -103,7 +103,7 @@ public class RevenueController {
         try{
             String start = data.get("start");
             String end = data.get("end");
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
             Date startDate = dateFormat.parse(start);
             Date endDate = dateFormat.parse(end);
 

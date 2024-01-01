@@ -75,7 +75,7 @@ public class OrderAdminController {
             Date endDate = null;
             // Kiem tra xem khoang ngay co bi null hay khong
             if (start != null || end != null) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm");
                 startDate = dateFormat.parse(start);
                 endDate = dateFormat.parse(end);
 
@@ -149,7 +149,7 @@ public class OrderAdminController {
     }
 
     @GetMapping("/total-order-status")
-    public ResponseEntity<?> getTotalOrderReceived(){
+    public ResponseEntity<?> getTotalOrder_User(){
         Map m = new HashMap<>();
         List<OrderDto> order_pending = orderService.findByOrderByStatus(StateOrder.PENDING);
         List<OrderDto> order_confirm = orderService.findByOrderByStatus(StateOrder.CONFIRMED);

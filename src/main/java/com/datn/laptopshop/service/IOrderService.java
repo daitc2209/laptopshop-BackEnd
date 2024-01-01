@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface IOrderService {
-    OrderDto order(Collection<CartItem> carts, InforOrder inforOrder);
+    OrderDto order(List<CartItem> carts, InforOrder inforOrder);
 
     OrderDto findByCodeOrder(String codeOrder);
 

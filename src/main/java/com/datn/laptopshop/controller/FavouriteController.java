@@ -41,7 +41,7 @@ public class FavouriteController {
                 return ResponseHandler.responseBuilder("Message","Success",
                         HttpStatus.OK,"",1);
             return ResponseHandler.responseBuilder("Message","Error",
-                    HttpStatus.OK,"The Product exist in favour !!",1);
+                    HttpStatus.OK,"The Product exist in favour !!",2);
         }catch (Exception e){
             return ResponseHandler.responseBuilder("Error",
                     "Add to favour failed !!!",

@@ -162,11 +162,9 @@ public class ProductAdminController {
                 String nameImage = (String) r.get("url");
                 productDto.setImg(nameImage);
             }catch (Exception e){
-                System.out.println("Loi roi !!!");
                 e.printStackTrace();
             }
 
-            System.out.println("productdto: "+productDto.toString());
             boolean res = productService.update(productDto);
             if (res)
                 return ResponseHandler.responseBuilder("success", " edit product successfully", HttpStatus.OK,"",0);

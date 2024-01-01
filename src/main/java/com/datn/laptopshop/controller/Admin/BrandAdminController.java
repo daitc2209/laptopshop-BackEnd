@@ -1,5 +1,7 @@
 package com.datn.laptopshop.controller.Admin;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.BrandDto;
 import com.datn.laptopshop.dto.CategoryDto;
@@ -10,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +23,8 @@ import java.util.Map;
 public class BrandAdminController {
     @Autowired
     private IBrandService brandService;
-
+    @Autowired
+    private Cloudinary cloudinary;
     @GetMapping("/findAll")
     public ResponseEntity<?> findAll(){
         Map m = new HashMap<>();
@@ -30,7 +34,7 @@ public class BrandAdminController {
     }
 
     @GetMapping
-    public ResponseEntity<?> categoriesPage(
+    public ResponseEntity<?> brandsPage(
             @RequestParam(name = "page",defaultValue = "1") int page,
             @RequestParam(value = "search", defaultValue = "") String search){
         try {
@@ -41,7 +45,6 @@ public class BrandAdminController {
                 m.put("listBrands", listBrands);
                 m.put("currentPage", page);
                 m.put("totalPage", listBrands.getTotalPages());
-
             }
             return ResponseHandler.responseBuilder("message","get listBrands successfully !!",
                     HttpStatus.OK,m,0);
@@ -53,10 +56,10 @@ public class BrandAdminController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> handleCreate(@RequestBody BrandDto brandDto) {
-
+    public ResponseEntity<?> handleCreate(@RequestParam(value = "name") String name,
+                                          @RequestParam(value = "fileImage", required = false) MultipartFile img) {
         try {
-            boolean res = brandService.insert(brandDto);
+            boolean res = brandService.insert(name, img);
             if(!res) {
                 return ResponseHandler.responseBuilder("err","Create Failed !!!!!",
                         HttpStatus.OK,"",99);
@@ -79,9 +82,10 @@ public class BrandAdminController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> handleUpdate(@RequestBody BrandDto brandDto) {
+    public ResponseEntity<?> handleUpdate(@RequestParam(value = "name") String name,
+                                          @RequestParam(value = "fileImage", required = false) MultipartFile img) {
         try {
-            boolean res = brandService.update(brandDto);
+            boolean res = brandService.update(name, img);
 
             if(!res) {
                 return ResponseHandler.responseBuilder("err","Update Failed !!!!!",
