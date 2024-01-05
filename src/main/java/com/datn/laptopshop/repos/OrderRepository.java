@@ -29,10 +29,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o from Order o where (o.user.username = ?1 OR o.user.email = ?1)" +
             " and (?2 is null or o.stateOrder = ?2)")
-    List<Order> findByOrderByStatus(String username, StateOrder status);
+    List<Order> findByOrderByStatusUser(String username, StateOrder status);
 
     @Query("SELECT o from Order o where (?1 is null or o.stateOrder = ?1)")
-    List<Order> findByOrderByStatus(StateOrder status);
+    List<Order> findByOrderByStatusAdmin(StateOrder status);
 
     @Query("SELECT o from Order o where (o.user.username = ?1 OR o.user.email = ?1)" +
             " and (?2 is null or ?3 is null or o.created_at BETWEEN ?2 AND ?3)" +
@@ -60,8 +60,4 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             "GROUP BY YEAR(o.created_at), MONTH(o.created_at), DAY(o.created_at)")
     List<Object[]> getOrderRevenueByRangeDay(Date start, Date end);
 
-//    @Query("SELECT YEAR(o.created_at) AS year, MONTH(o.created_at) as month, count (o.id) AS amount " +
-//            "FROM Order o" +
-//            " GROUP BY YEAR(o.created_at), MONTH(o.created_at)")
-//    List<Object[]> getOrderByMonth();
 }

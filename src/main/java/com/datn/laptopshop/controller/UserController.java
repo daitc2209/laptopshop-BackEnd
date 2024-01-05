@@ -37,10 +37,6 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private JavaMail javaMail;
-    @Autowired
-    private Cloudinary cloudinary;
-
-    private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\user\\";
 
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody SignInRequest u) throws Exception {
@@ -163,19 +159,9 @@ public class UserController {
             profile.setBirthday(birthday);
             profile.setEmail(email);
             profile.setPhone(phone);
-            String nameImage = "";
             UserDto u = userService.findbyId(profile.getId());
             if (u != null){
-                try{
-                    Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
-                    nameImage = (String) r.get("url");
-                    profile.setImg(nameImage);
-                }catch (Exception e){
-                    profile.setImg(null);
-                    e.printStackTrace();
-                }
-
-                boolean res = userService.update(profile);
+                boolean res = userService.update(profile, fileImage);
                 if (res)
                     return ResponseHandler.responseBuilder("success", "post profile user success", HttpStatus.OK,"",0);
             }

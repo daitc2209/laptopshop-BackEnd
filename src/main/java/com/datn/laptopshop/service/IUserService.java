@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -32,8 +33,8 @@ public interface IUserService {
 
     UserDto findbyId(int id);
 
-    boolean update(EditProfileRequest profile);
-    boolean update(EditUserRequest edit);
+    boolean update(EditProfileRequest profile, MultipartFile fileImage);
+    boolean update(EditUserRequest edit, MultipartFile fileImage);
 
     boolean changePW(int id,String oldPW, String newPW);
 

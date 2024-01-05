@@ -23,8 +23,6 @@ import java.util.Map;
 public class BrandAdminController {
     @Autowired
     private IBrandService brandService;
-    @Autowired
-    private Cloudinary cloudinary;
     @GetMapping("/findAll")
     public ResponseEntity<?> findAll(){
         Map m = new HashMap<>();

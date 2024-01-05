@@ -1,5 +1,7 @@
 package com.datn.laptopshop.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.JWTService;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.UserDto;
@@ -34,6 +36,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
@@ -53,7 +56,8 @@ public class UserService implements IUserService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JWTService jwtService;
-
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public ResponseEntity<Object> login(SignInRequest u) throws Exception{
@@ -230,13 +234,18 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean update(EditProfileRequest profile) {
-        if (profile == null)
-            return false;
-
+    public boolean update(EditProfileRequest profile, MultipartFile fileImage) {
         var u = userRepository.findById(profile.getId());
         if (u.isPresent())
         {
+            try{
+                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
+                String nameImage = (String) r.get("url");
+                profile.setImg(nameImage);
+            }catch (Exception e){
+                profile.setImg(null);
+            }
+
             u.get().setId(profile.getId());
             if (profile.getFullname() != null)
             u.get().setFullname(profile.getFullname());
@@ -260,7 +269,7 @@ public class UserService implements IUserService, UserDetailsService {
     }
 
     @Override
-    public boolean update(EditUserRequest edit) {
+    public boolean update(EditUserRequest edit, MultipartFile fileImage) {
         if (edit == null)
             return false;
         if (edit.isEmpty()) {
@@ -270,6 +279,15 @@ public class UserService implements IUserService, UserDetailsService {
         var u = userRepository.findById(edit.getId());
         if (u.isPresent())
         {
+            try{
+                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
+                String nameImage = (String) r.get("url");
+                edit.setImg(nameImage);
+            }catch (Exception e){
+                edit.setImg(null);
+                e.printStackTrace();
+            }
+
             u.get().setId(edit.getId());
             if (edit.getFullname() != null)
                 u.get().setFullname(edit.getFullname());
@@ -403,6 +421,7 @@ public class UserService implements IUserService, UserDetailsService {
         u.setHash_pw(passwordEncoder.encode(addUserRequest.getPassword()));
         u.setGender("MALE");
         u.setAddress(" ");
+        u.setPhone(" ");
         u.setStateUser(StateUser.ACTIVED);
         u.setAuthType(AuthenticationType.DATABASE);
         u.setRole(roleRepository.findById(addUserRequest.getRole()).get());

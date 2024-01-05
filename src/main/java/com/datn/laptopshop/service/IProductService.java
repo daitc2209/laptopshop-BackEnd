@@ -6,6 +6,7 @@ import com.datn.laptopshop.dto.request.FilterProductRequest;
 import com.datn.laptopshop.dto.request.SearchProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,8 +21,8 @@ public interface IProductService {
 
     Page<ProductDto> findAll(int page, int limit, SearchProductRequest search);
 
-    boolean insert(ProductDto productDto);
-    boolean update(ProductDto productDto);
+    boolean insert(ProductDto productDto, MultipartFile fileImage);
+    boolean update(ProductDto productDto, MultipartFile fileImage);
     boolean delete(int id);
 
     boolean updateQuantityProduct(List<OrderDetailDto> list);

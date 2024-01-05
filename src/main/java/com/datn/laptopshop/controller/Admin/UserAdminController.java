@@ -34,8 +34,6 @@ public class UserAdminController {
     @Autowired
     private Cloudinary cloudinary;
 
-    private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\user\\";
-
     @GetMapping
     public ResponseEntity<?> getListUser(
             @RequestParam(name = "fullname", defaultValue = "") String fullname,
@@ -105,26 +103,9 @@ public class UserAdminController {
             edit.setBirthday(birthday);
             edit.setStateUser(stateUser);
             edit.setPhone(phone);
-            String nameImage = "";
             UserDto u = userService.findbyId(edit.getId());
             if (u != null) {
-//                if (fileImage != null && !fileImage.isEmpty()) {
-//                    nameImage = UUID.randomUUID().toString().charAt(0)+ StringUtils.cleanPath(fileImage.getOriginalFilename());
-//                    //tao duong dan den thu muc fontend , tao random truoc ten file anh
-//                    String filePath = FOLDER_PATH +nameImage;
-//                    //chuyen file anh do sang thu muc fontend
-//                    fileImage.transferTo(new File(filePath));
-//                    edit.setImg(nameImage);
-//                }
-                try{
-                    Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
-                    nameImage = (String) r.get("url");
-                    edit.setImg(nameImage);
-                }catch (Exception e){
-                    edit.setImg(null);
-                    e.printStackTrace();
-                }
-                boolean res = userService.update(edit);
+                boolean res = userService.update(edit, fileImage);
 
                 if (res)
                     return ResponseHandler.responseBuilder("success", "post edit user successfully", HttpStatus.OK,"",0);

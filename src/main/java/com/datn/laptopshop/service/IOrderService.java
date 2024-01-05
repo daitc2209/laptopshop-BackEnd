@@ -25,8 +25,6 @@ public interface IOrderService {
 
     List<OrderDto> findByOrderByStatus(StateOrder status);
 
-    boolean cancelOrder(int id);
-
     Page<OrderDto> findAll(int page, int limit, String search_text, StateOrder status);
 
     Page<OrderDto> findOrderByRangeDay(int page, int limit, String search_text, Date start, Date end, StateOrder status);
@@ -36,4 +34,8 @@ public interface IOrderService {
     List<OrderDto> findOrderByRangeDay(String email, Date start, Date end, StateOrder status);
 
     boolean deleteOrder(int id);
+
+    boolean cancelOrder(int id);
+
+    boolean sendMailCancelledOrder(String codeOrder);
 }

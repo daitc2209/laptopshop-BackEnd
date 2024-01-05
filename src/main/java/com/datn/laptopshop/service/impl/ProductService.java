@@ -1,5 +1,7 @@
 package com.datn.laptopshop.service.impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.OrderDetailDto;
 import com.datn.laptopshop.dto.ProductDto;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -41,6 +44,9 @@ public class ProductService implements IProductService {
 
     @Autowired
     OrderDetailRepository OrderDetailRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public List<ProductDto> findByCategoryId(int id) {
@@ -99,7 +105,6 @@ public class ProductService implements IProductService {
             var product =  productRepository.findById(id);
             if (product.isPresent()){
                 ProductDto dto = new ProductDto().toProductDTO(product.get());
-                System.out.println("dto trong product id: "+dto);
                 return dto;
             }
             return null;
@@ -124,7 +129,6 @@ public class ProductService implements IProductService {
     public Page<ProductDto> findAll(int page, int limit, SearchProductRequest search) {
         Sort sort = Sort.by(Sort.Direction.DESC,"id");
         Pageable p = PageRequest.of(page - 1, limit, sort);
-        System.out.println("vao duoc service");
 
         Page<Product> pageUser = productRepository.findAll(search.getText(),search.getCategoryId(),search.getBrandId(),p);
 
@@ -137,34 +141,36 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public boolean insert(ProductDto productDto) {
-    // If the input is null, throw exception
-        if (productDto == null) {
-            return false;
-        }
-
-        // If the input is empty, throw exception
+    public boolean insert(ProductDto productDto, MultipartFile fileImage) {
         if (productDto.isEmpty()) {
             return false;
         }
 
+        try{
+            Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
+            String nameImage = (String) r.get("url");
+            productDto.setImg(nameImage);
+        }catch (Exception e){
+            productDto.setImg(null);
+        }
+
         // If insert data failed, return null
-        Product productEntity = new Product();
+        Product product = new Product();
 
-        productEntity.setId(productDto.getId());
+        product.setId(productDto.getId());
         Optional<Category> categoryEntity = categoryRepository.findByName(productDto.getCategoryName());
-        productEntity.setCategory(categoryEntity.get());
+        product.setCategory(categoryEntity.get());
         Optional<Brand> brandEntity = brandRepository.findByName(productDto.getBrandName());
-        productEntity.setBrand(brandEntity.get());
-        productEntity.setName(productDto.getName());
-        productEntity.setPrice(productDto.getPrice());
-        productEntity.setDiscount(productDto.getDiscount());
-        productEntity.setQuantity(productDto.getQuantity());
-        productEntity.setImg(productDto.getImg());
-        productEntity.setDescription(productDto.getDescription());
-        productEntity.setStateProduct(productDto.getState());
+        product.setBrand(brandEntity.get());
+        product.setName(productDto.getName());
+        product.setPrice(productDto.getPrice());
+        product.setDiscount(productDto.getDiscount());
+        product.setQuantity(productDto.getQuantity());
+        product.setImg(productDto.getImg());
+        product.setDescription(productDto.getDescription());
+        product.setStateProduct(productDto.getState());
 
-        Product productSave = productRepository.save(productEntity);
+        Product productSave = productRepository.save(product);
         if (!productRepository.existsById(productSave.getId())) {
             return false;
         }
@@ -173,44 +179,40 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public boolean update(ProductDto productDto) {
-// If the input is null, throw exception
-        if (productDto == null) {
-            System.out.println("product null");
-            return false;
-        }
-
-        // If the input is empty, throw exception
+    public boolean update(ProductDto productDto, MultipartFile fileImage) {
         if (productDto.isEmpty()) {
             System.out.println("product Empty");
             return false;
         }
 
-        // If the data to be modified is not found, throw exception
-        Optional<Product> oldProductEntity = productRepository.findById(productDto.getId());
-        if (oldProductEntity.isEmpty()) {
+        Optional<Product> oldProduct = productRepository.findById(productDto.getId());
+        if (oldProduct.isEmpty()) {
             System.out.println("product not found");
             return false;
         }
 
-        // If the new product name is different from the old product name and the new
-        // product name already exists, throw exception
+        try{
+            Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
+            String nameImage = (String) r.get("url");
+            productDto.setImg(nameImage);
+        }catch (Exception e){
+            productDto.setImg(null);
+        }
 
-        // If saving modification fail, return false
-        Category categoryEntity = categoryRepository.findByName(productDto.getCategoryName()).get();
-        oldProductEntity.get().setCategory(categoryEntity);
+        Category category = categoryRepository.findByName(productDto.getCategoryName()).get();
+        oldProduct.get().setCategory(category);
         Brand brandEntity = brandRepository.findByName(productDto.getBrandName()).get();
-        oldProductEntity.get().setBrand(brandEntity);
-        oldProductEntity.get().setName(productDto.getName());
-        oldProductEntity.get().setPrice(productDto.getPrice());
-        oldProductEntity.get().setDiscount(productDto.getDiscount());
+        oldProduct.get().setBrand(brandEntity);
+        oldProduct.get().setName(productDto.getName());
+        oldProduct.get().setPrice(productDto.getPrice());
+        oldProduct.get().setDiscount(productDto.getDiscount());
         if (productDto.getImg() != null)
-            oldProductEntity.get().setImg(productDto.getImg());
-        oldProductEntity.get().setQuantity(productDto.getQuantity());
-        oldProductEntity.get().setDescription(productDto.getDescription());
-        oldProductEntity.get().setStateProduct(productDto.getState());
+            oldProduct.get().setImg(productDto.getImg());
+        oldProduct.get().setQuantity(productDto.getQuantity());
+        oldProduct.get().setDescription(productDto.getDescription());
+        oldProduct.get().setStateProduct(productDto.getState());
 
-        Product productSave = productRepository.save(oldProductEntity.get());
+        Product productSave = productRepository.save(oldProduct.get());
         if (productSave == null) {
             return false;
         }
@@ -220,21 +222,20 @@ public class ProductService implements IProductService {
 
     @Override
     public boolean delete(int id) {
-        // If the data does not exist, throw exception
         if (!productRepository.existsById(id)) {
             System.out.println("product not exist!!");
             return false;
         }
         Optional<Product> p = productRepository.findById(id);
+
+        //Neu san pham do co trong chi tiet don hang thi khong cho xoa
         if (OrderDetailRepository.existsByProduct(id)){
             System.out.println("product exist in OrderDetail !!!!");
             return false;
         }
 
-        // Clear data based on input
         productRepository.deleteById(id);
 
-        // If the deleted data still exists, return false
         if (productRepository.existsById(id)) {
             return false;
         }
@@ -266,7 +267,6 @@ public class ProductService implements IProductService {
         if (product.isEmpty())
             return false;
 
-        // If saving modification fail, return false
         if (state == 1)
             product.get().setStateProduct(StateProduct.DISABLED);
         if (state == 0)

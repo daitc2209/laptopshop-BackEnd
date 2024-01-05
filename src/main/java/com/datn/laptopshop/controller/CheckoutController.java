@@ -215,9 +215,9 @@ public class CheckoutController {
                 String content = "<div style=\"font-family:&quot;Arial&quot;,Helvetica Neue,Helvetica,sans-serif;line-height:14pt;padding:20px 0px;font-size:14px;max-width:580px;margin:0 auto\"><div>\n" +
                         "  </div><div style=\"padding:0 10px;margin-bottom:25px\"><div>\n" +
                         "    \n" +
-                        "    </div><p>Xin chào " + orderEntity.getName() + "</p>\n" +
-                        "    <p>Cảm ơn Anh/chị đã đặt hàng tại <strong>TCD Laptop</strong>!</p>\n" +
-                        "    <p>Đơn hàng của Anh/chị đã được tiếp nhận, chúng tôi sẽ nhanh chóng liên hệ với Anh/chị.</p>\n" +
+                        "    </div><p>Xin chào Anh/Chị <strong>" + orderEntity.getName() + "</strong></p>\n" +
+                        "    <p>Cảm ơn Anh/Chị đã đặt hàng tại <strong>TCD Laptop</strong>!</p>\n" +
+                        "    <p>Đơn hàng của Anh/Chị đã được tiếp nhận, chúng tôi sẽ nhanh chóng liên hệ với Anh/Chị.</p>\n" +
                         "  </div>\n" +
                         "  <hr>\n" +
                         "  <div style=\"padding:0 10px\">\n" +
@@ -317,14 +317,13 @@ public class CheckoutController {
                         "    </ul>\n" +
                         "    <table style=\"width:100%;border-collapse:collapse;margin-bottom:50px;margin-top:10px\">\n" +
                         "      <tbody><tr>\n" +
-                        "        <td style=\"width:20%\"></td>\n" +
-                        "        <td style=\"width:80%\">\n" +
+                        "        <td>\n" +
                         "          <table style=\"width:100%;float:right\">\n" +
                         "            <tbody><tr>\n" +
                         "            <tr>\n" +
                         "              <td style=\"padding-bottom:10px\">Tổng tiền:</td>\n" +
                         "              <td style=\"font-weight:bold;text-align:right;padding-bottom:10px\">\n" +
-                        "                " + orderEntity.getTotal_money() + " VND</td>\n" +
+                        "                " + (orderEntity.getTotal_money()-40000) + " VND</td>\n" +
                         "            </tr>\n" +
                         "            <tr>\n" +
                         "              <td style=\"padding-bottom:10px\">Phí vận chuyển:</td>\n" +
@@ -334,7 +333,7 @@ public class CheckoutController {
                         "            <tr style=\"border-top:1px solid #e5e9ec\">\n" +
                         "              <td style=\"padding-top:10px\">Thành tiền</td>\n" +
                         "              <td style=\"font-weight:bold;text-align:right;font-size:16px;padding-top:10px\">\n" +
-                        "                " + (orderEntity.getTotal_money()) + " VND</td>\n" +
+                        "                " + orderEntity.getTotal_money() + " VND</td>\n" +
                         "            </tr>\n" +
                         "          </tbody></table>\n" +
                         "        </td>\n" +
@@ -349,7 +348,13 @@ public class CheckoutController {
                         "  <div style=\"clear:both\"></div>\n" +
                         "  <div style=\"padding:0 10px\">\n" +
                         "    <div style=\"clear:both\"></div>\n" +
-                        "    <p style=\"margin:30px 0\">Nếu Anh/chị có bất kỳ câu hỏi nào, xin liên hệ với chúng tôi tại <a href=\"mailto:trandai1116@gmail.com\" style=\"color:#357ebd\" target=\"_blank\">trandai1116@gmail.com</a></p>\n" +
+                        "    <p style=\"margin:30px 0\">Nếu Anh/Chị có bất kỳ câu hỏi nào, xin liên hệ với chúng tôi tại <a href=\"mailto:trandai1116@gmail.com\" style=\"color:#357ebd\" target=\"_blank\">trandai1116@gmail.com</a></p>\n" +
+                        "    <p style=\"font-size:medium\"><strong>Thông tin liên hệ:</strong></p>\n" +
+                        "    <ul>\n" +
+                        "        <li><strong>Email:</strong> <a href=\"mailto:trandai1116@gmail.com\">trandai1116@gmail.com</a></li>\n" +
+                        "        <li><strong>Số điện thoại:</strong> (+84) 0906088493</li>\n" +
+                        "    </ul>\n" +
+                        "    <p>Xin cảm ơn Anh/Chị đã đặt hàng tại cửa hàng chúng tôi.</p>\n" +
                         "    <p style=\"text-align:right\"><i>Trân trọng,</i></p>\n" +
                         "    <p style=\"text-align:right\"><strong>Ban quản trị cửa hàng TCD Laptop </strong></p>\n" +
                         "  </div>\n" +

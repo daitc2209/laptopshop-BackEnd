@@ -31,10 +31,6 @@ public class ProductAdminController {
     @Autowired
     private IProductService productService;
 
-    @Autowired
-    private Cloudinary cloudinary;
-
-    private final String FOLDER_PATH="D:\\DATN\\laptopshop_VueJS\\laptopshop_vuejs\\src\\images\\product\\";
 
     @GetMapping
     public ResponseEntity<?> showProductPage(
@@ -94,16 +90,8 @@ public class ProductAdminController {
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
             productDto.setState(stateProduct);
-            String nameImage = "";
-            try{
-                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
-                nameImage = (String) r.get("url");
-                productDto.setImg(nameImage);
-            }catch (Exception e){
-                productDto.setImg(null);
-                e.printStackTrace();
-            }
-            var p = productService.insert(productDto);
+
+            var p = productService.insert(productDto, fileImage);
             if (p)
                 return ResponseHandler.responseBuilder
                         ("success", "Create product success", HttpStatus.OK,"",0);
@@ -157,15 +145,8 @@ public class ProductAdminController {
             productDto.setQuantity(quantity);
             productDto.setDescription(description);
             productDto.setState(stateProduct);
-            try{
-                Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));
-                String nameImage = (String) r.get("url");
-                productDto.setImg(nameImage);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
 
-            boolean res = productService.update(productDto);
+            boolean res = productService.update(productDto, fileImage);
             if (res)
                 return ResponseHandler.responseBuilder("success", " edit product successfully", HttpStatus.OK,"",0);
 

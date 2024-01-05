@@ -31,7 +31,7 @@ public class CartController {
         try {
             ProductDto product = productService.findProductId(productId);
             if (product == null) {
-                return ResponseEntity.badRequest().body("Invalid product ID");
+                return ResponseHandler.responseBuilder("Error","Invalid product ID", HttpStatus.BAD_REQUEST,"",99);
             }
             if (product.getQuantity() < num)
                 return ResponseHandler.responseBuilder("Error","Out of stock", HttpStatus.BAD_REQUEST,"",99);

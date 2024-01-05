@@ -30,7 +30,7 @@ public class PurchaseHistoryController {
             try{
                 stateOrder = StateOrder.valueOf(status.toUpperCase());
             }
-            catch (IllegalArgumentException e)
+            catch (Exception e)
             {
                 stateOrder = null;
             }
@@ -45,11 +45,21 @@ public class PurchaseHistoryController {
         }
     }
 
-    @PostMapping("/delete")
-    public ResponseEntity<Object> cancelOrder(@RequestParam("id") int id, @RequestParam("status") StateOrder status){
+    @PostMapping("/cancelled")
+    public ResponseEntity<Object> cancelledOrder(
+            @RequestParam("id") int id,
+            @RequestParam("status") String status ){
         Map m = new HashMap<>();
+        StateOrder stateOrder;
+        try{
+            stateOrder = StateOrder.valueOf(status.toUpperCase());
+        }
+        catch (Exception e)
+        {
+            stateOrder = null;
+        }
         boolean cancel = orderService.cancelOrder(id);
-        List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), status);
+        List<OrderDto> order = orderService.findByOrderByStatus(IdLogged.getUser(), stateOrder);
         m.put("order",order);
 
         if (cancel)
@@ -58,6 +68,11 @@ public class PurchaseHistoryController {
 
         return ResponseHandler.responseBuilder("Error","Bo qua that bai !!!",
                 HttpStatus.BAD_REQUEST,"",99);
+    }
+
+    @PostMapping("/send-mail-cancelled")
+    public void sendMailCancelled(@RequestParam("codeOrder") String codeOrder){
+        orderService.sendMailCancelledOrder(codeOrder);
     }
 
     @PostMapping("/range-day")
@@ -84,7 +99,7 @@ public class PurchaseHistoryController {
             try{
                 stateOrder = StateOrder.valueOf(status.toUpperCase());
             }
-            catch (IllegalArgumentException e)
+            catch (Exception e)
             {
                 stateOrder = null;
             }

@@ -1,5 +1,6 @@
 package com.datn.laptopshop.service.impl;
 
+import com.datn.laptopshop.config.JavaMail;
 import com.datn.laptopshop.config.ResponseHandler;
 import com.datn.laptopshop.dto.*;
 import com.datn.laptopshop.dto.request.InforOrder;
@@ -36,6 +37,9 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private OrderDetailRepository orderDetailRepository;
+
+    @Autowired
+    private JavaMail javaMail;
 
     @Override
     public OrderDto order(List<CartItem> carts, InforOrder inforOrder) {
@@ -117,7 +121,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderDto> findByOrderByStatus(String email, StateOrder status) {
-        List<Order> listOrder = orderRepository.findByOrderByStatus(email, status);
+        List<Order> listOrder = orderRepository.findByOrderByStatusUser(email, status);
         if (listOrder.isEmpty()){
                 return new ArrayList<>();
         }
@@ -143,7 +147,7 @@ public class OrderService implements IOrderService {
 
     @Override
     public List<OrderDto> findByOrderByStatus(StateOrder status) {
-        List<Order> listOrder = orderRepository.findByOrderByStatus(status);
+        List<Order> listOrder = orderRepository.findByOrderByStatusAdmin(status);
         if (listOrder.isEmpty()){
             return new ArrayList<>();
         }
@@ -280,12 +284,93 @@ public class OrderService implements IOrderService {
         if (status == StateOrder.RECEIVED)
             order.get().setStateCheckout(StateCheckout.PAID);
 
+//        if (status == StateOrder.CANCELLED)
+//        {
+//            // gui mail huy don hang ve
+//            sendMailCancelledOrder(order.get().getCodeOrder());
+//        }
+
+
         order.get().setStateOrder(status);
         if (orderRepository.save(order.get()) == null) {
             return false;
         }
 
         return true;
+    }
+
+    @Override
+    public boolean sendMailCancelledOrder(String codeOrder) {
+        int attemptCount=0;
+        int maxAttempt=0;
+        do {
+            try {
+                String subject = "Hủy đơn hàng ";
+                var orderInfo = orderRepository.findByCodeOrder(codeOrder);
+                var od = orderDetailRepository.findByOrder(orderInfo.get().getId());
+                StringBuilder productsHtml = new StringBuilder();
+                for (OrderDetail product : od) {
+                    int newPrice = (product.getPrice() - (product.getDiscount() * product.getPrice()) / 100);
+                    productsHtml.append("<li>");
+                    productsHtml.append("<table style=\"width:100%;border-bottom:1px solid #e4e9eb\">");
+                    productsHtml.append("<tbody><tr>");
+                    productsHtml.append("<td style=\"width:100%;padding:25px 10px 0px 0\" colspan=\"2\">");
+                    productsHtml.append("<div style=\"float:left;width:80px;height:80px;border:1px solid #ebeff2;overflow:hidden\">");
+                    productsHtml.append("<img style=\"max-width:100%;max-height:100%\" src=\"" + product.getProduct().getImg() + "\"></div>");
+                    productsHtml.append("<div style=\"margin-left:100px\">");
+                    productsHtml.append("<a href=\"#\" style=\"color:#357ebd;text-decoration:none\">" + product.getProduct().getName() + "</a><p style=\"color:#678299;margin-bottom:0;margin-top:8px\">Giá: " + product.getPrice() + " VND</p><p style=\"color:#678299;margin-bottom:0;margin-top:8px\">Giảm giá: " + product.getDiscount() + "%</p></div></td></tr>");
+                    productsHtml.append("<tr>");
+                    productsHtml.append("<td style=\"width:70%;padding:5px 0px 25px\">");
+                    productsHtml.append("<div style=\"margin-left:100px\">");
+                    productsHtml.append("" + newPrice + " VND<span style=\"margin-left:20px\">x " + product.getNum() + "</span></div></td>");
+                    productsHtml.append("<td style=\"text-align:right;width:30%;padding:5px 0px 25px\">");
+                    productsHtml.append(" " + product.getTotalPrice() + " VND</td></tbody></table>");
+                    productsHtml.append("</li>");
+                }
+                    String content ="<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;\">\n" +
+                            "\n" +
+                            "    <h2>Thông Báo Hủy Đơn Hàng và Hoàn Tiền</h2>\n" +
+                            "\n" +
+                            "    <p>Kính gửi Anh/Chị <strong>"+orderInfo.get().getName()+"</strong>, Email: "+orderInfo.get().getEmail()+"</p>\n" +
+                            "\n" +
+                            "    <p>Chúng tôi xin thông báo rằng đơn hàng của Anh/Chị đã được hủy thành công tại <strong>TCD Laptop</strong>. Việc hoàn tiền sẽ được thực hiện trong thời gian sớm nhất.</p>\n" +
+                            "\n" +
+                            "    <p>Thông tin chi tiết về đơn hàng đã hủy:</p>\n" +
+                            "\n" +
+                            "    \n" +
+                            "        Mã đơn hàng: <span style=\"font-size:medium; margin-left:56%\"><strong>"+orderInfo.get().getCodeOrder()+"</strong></span> <br>\n" +
+                            "        Ngày đặt hàng: <span style=\"font-size:medium; margin-left:55.5%\"><strong>"+orderInfo.get().getCreated_at()+"</strong></span> <br>\n" +
+                            "        <span style=\"padding-top: 4px\">Sản phẩm:</span><br>\n" +
+                            "        <ul style=\"padding-left:0;list-style-type:none;margin-bottom:0\">\n" +
+                                      productsHtml  +
+                            "              </ul> <br>\n" +
+                            "        <span>Tổng tiền đơn hàng:</span> <span style=\"font-weight:600; font-size:medium; margin-left:60%\">"+orderInfo.get().getTotal_money()+" VND</span>\n" +
+                            "    \n" +
+                            "\n" +
+                            "    <p style=\"font-size:medium\"><strong>Hướng dẫn hoàn tiền với đơn hàng đã thanh toán:</strong> Anh/Chị vui lòng liên hệ với chúng tôi qua <strong>email</strong> để được hỗ trợ hoàn tiền.</p>\n" +
+                            "\n" +
+                            "    <p>Nếu có bất kỳ câu hỏi hoặc cần hỗ trợ, vui lòng liên hệ chúng tôi qua email: <a href=\"mailto:trandai1116@gmail.com\">trandai1116@gmail.com</a>.</p>\n" +
+                            "\n" +
+                            "    <p style=\"font-size:medium\"><strong>Thông tin liên hệ:</strong></p>\n" +
+                            "    <ul>\n" +
+                            "        <li><strong>Email:</strong> <a href=\"mailto:trandai1116@gmail.com\">trandai1116@gmail.com</a></li>\n" +
+                            "        <li><strong>Số điện thoại:</strong> (+84) 0906088493</li>\n" +
+                            "    </ul>\n" +
+                            "\n" +
+                            "    <p>Xin cảm ơn sự quan tâm của Anh/Chị trong việc đặt hàng tại cửa hàng chúng tôi.</p>\n" +
+                            "\n" +
+                            "    <p style=\"text-align:right\"><i>Trân trọng,</i></p>\n" +
+                            "    <p style=\"text-align:right\"><strong>Ban quản trị cửa hàng TCD Laptop </strong></p>\n" +
+                            "\n" +
+                            "</div>";
+                javaMail.sendEmail(orderInfo.get().getEmail(), subject, content);
+                return true;
+            } catch (Exception e) {
+                attemptCount++;
+                e.printStackTrace();
+            }
+        }while(attemptCount < maxAttempt);
+        return false;
     }
 
 }
