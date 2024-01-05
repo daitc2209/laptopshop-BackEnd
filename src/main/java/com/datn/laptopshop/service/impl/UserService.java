@@ -238,6 +238,10 @@ public class UserService implements IUserService, UserDetailsService {
         var u = userRepository.findById(profile.getId());
         if (u.isPresent())
         {
+            if (!u.get().getEmail().equals(profile.getEmail()) && userRepository.existsByEmail(profile.getEmail()))
+            {
+                return false;
+            }
             try{
                 Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/user"));
                 String nameImage = (String) r.get("url");

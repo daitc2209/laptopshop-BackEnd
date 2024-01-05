@@ -109,14 +109,14 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public boolean update(String name, MultipartFile img) {
+    public boolean update(int id, String name, MultipartFile img) {
         // If the input is null, throw exception
         if (name == null) {
             System.out.println("The input is null!"); return false;
         }
 
         // If the data to be modified is not found, throw exception
-        Optional<Brand> oldBrandEntity = brandRepository.findByName(name);
+        Optional<Brand> oldBrandEntity = brandRepository.findById(id);
         if (oldBrandEntity.isEmpty()) {
             System.out.println("The data to be modified is not found!");return false;
         }

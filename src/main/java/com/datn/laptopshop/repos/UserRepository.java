@@ -50,4 +50,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                        AuthenticationType authType,
                        int role,
                        Pageable pageable);
+
+    @Query("select count(u)>0 from User u where u.email = ?1")
+    boolean existsByEmail(String email);
 }

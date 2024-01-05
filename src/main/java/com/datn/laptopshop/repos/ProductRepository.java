@@ -18,6 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("select p from Product p where p.category.id = ?1 and p.stateProduct = 1")
     List<Product> findAllProductWithCategoryId(int id);
 
+    @Query("select p from Product p where p.category.name = ?1 and p.stateProduct = 1")
+    List<Product> findAllProductWithCategoryName(String name);
+
     @Query("SELECT p\n" +
             "FROM Product p, Brand b, Category c \n" +
             "WHERE p.brand.id = b.id AND p.category.id = c.id and p.stateProduct = 1 \n" +

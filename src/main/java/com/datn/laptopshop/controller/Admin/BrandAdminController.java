@@ -36,7 +36,7 @@ public class BrandAdminController {
             @RequestParam(name = "page",defaultValue = "1") int page,
             @RequestParam(value = "search", defaultValue = "") String search){
         try {
-            int limit = 4;
+            int limit = 8;
             Map m = new HashMap<>();
             var listBrands = brandService.findAll(page,limit,search);
             if (listBrands != null){
@@ -80,10 +80,11 @@ public class BrandAdminController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> handleUpdate(@RequestParam(value = "name") String name,
-                                          @RequestParam(value = "fileImage", required = false) MultipartFile img) {
+    public ResponseEntity<?> handleUpdate(@RequestParam(value = "id") int id,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "fileImage", required = false) MultipartFile img) {
         try {
-            boolean res = brandService.update(name, img);
+            boolean res = brandService.update(id,name, img);
 
             if(!res) {
                 return ResponseHandler.responseBuilder("err","Update Failed !!!!!",

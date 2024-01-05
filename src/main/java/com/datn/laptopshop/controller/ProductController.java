@@ -26,4 +26,12 @@ public class ProductController {
         return ResponseHandler.responseBuilder("Message","Success",
                 HttpStatus.OK,m,1);
     }
+
+    //Lay san pham tuong tu
+    @GetMapping("/getSameProduct")
+    public ResponseEntity<?> getSameProduct(@RequestParam("name") String name){
+        Map m = new HashMap<>();
+        m.put("same_product",productService.findByCategoryName(name));
+        return ResponseHandler.responseBuilder("Message","Success",HttpStatus.OK,m,1);
+    }
 }

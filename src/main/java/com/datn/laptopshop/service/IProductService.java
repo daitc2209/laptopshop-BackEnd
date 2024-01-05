@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface IProductService {
     List<ProductDto> findByCategoryId(int id);
-
+    List<ProductDto> findByCategoryName(String name);
     Page<ProductDto> findAll(FilterProductRequest filterProduct, int page, int limit);
 
     ProductDto findProductId(int id);

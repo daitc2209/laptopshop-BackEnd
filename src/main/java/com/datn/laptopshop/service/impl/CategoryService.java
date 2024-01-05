@@ -102,7 +102,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public boolean update(CategoryDto categoryDto) {
         // If the input is null, throw exception
-        if (categoryDto == null) {
+        if (categoryDto.isEmpty()) {
             System.out.println("The input is null!");return false;
         }
 

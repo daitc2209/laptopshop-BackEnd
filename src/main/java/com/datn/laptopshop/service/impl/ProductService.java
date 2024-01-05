@@ -56,9 +56,21 @@ public class ProductService implements IProductService {
             return null;
         List<ProductDto> listProductDto = new ArrayList<>();
         for (Product product : listProduct) {
-            System.out.println("product: "+ product);
             ProductDto dto = new ProductDto().toProductDTO(product);
-            System.out.println("dto: "+ dto.toString());
+            listProductDto.add(dto);
+        }
+
+        return listProductDto;
+    }
+
+    @Override
+    public List<ProductDto> findByCategoryName(String name) {
+        List<Product> listProduct = productRepository.findAllProductWithCategoryName(name);
+        if(listProduct == null)
+            return null;
+        List<ProductDto> listProductDto = new ArrayList<>();
+        for (Product product : listProduct) {
+            ProductDto dto = new ProductDto().toProductDTO(product);
             listProductDto.add(dto);
         }
 
@@ -190,6 +202,7 @@ public class ProductService implements IProductService {
             System.out.println("product not found");
             return false;
         }
+
 
         try{
             Map r = cloudinary.uploader().upload(fileImage.getBytes(), ObjectUtils.asMap("folder","images/product"));

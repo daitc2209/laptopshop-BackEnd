@@ -15,7 +15,7 @@ public interface IBrandService {
     BrandDto findById(int id);
     boolean insert(String name, MultipartFile img);
 
-    boolean update(String name, MultipartFile img);
+    boolean update(int id,String name, MultipartFile img);
 
     boolean delete(int id);
 }

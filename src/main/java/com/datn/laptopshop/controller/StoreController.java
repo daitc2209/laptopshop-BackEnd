@@ -64,9 +64,7 @@ public class StoreController {
 
     @GetMapping("/store/{id}")
     public ResponseEntity<Object> getProductID(@PathVariable("id") int id){
-        System.out.println("id cua product: "+id);
         ProductDto p = productService.findProductId(id);
-        System.out.println("p: "+p);
 
         return ResponseHandler.responseBuilder("success","Get product by id success",HttpStatus.OK,p,0);
     }
